@@ -1,0 +1,4 @@
+pandas
+plotly
+country_converter
+streamlit
