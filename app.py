@@ -14,9 +14,7 @@ with col1:
     st.markdown("### 📊 #01 — Sequestri Esotici CITES Italia (2013-2023)")
     st.write("Mappa interattiva e analisi sui flussi di commercio esotico verso l'Italia. Confronta le importazioni ufficialmente autorizzate con i volumi delle confisce effettuate alle dogane.")
     st.caption("Status: **Completato** | Tematica: *Biodiversità e Traffico Illecito*")
-    
-    # Questo è il nuovo pulsante nativo e sicuro
-    st.page_link("pages/01_Sequestri_CITES.py", label="Apri l'Analisi #01", icon="🚀")
+    st.info("👈 Apri il menu laterale (clicca sulla freccia in alto a sinistra) per navigare tra i progetti e le estrazioni.")
 
 with col2:
     st.markdown("### 🔄 Prossime Inchieste (In Arrivo)")
