@@ -1,6 +1,11 @@
 import streamlit as st
 
-st.set_page_config(page_title="Wild Data Hub | A Wild Pixel", layout="wide")
+# Impostiamo la sidebar visibile di default
+st.set_page_config(
+    page_title="Wild Data Hub | A Wild Pixel", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 st.title("Wild Data 🐾 | Data Journalism & Visual Inquiries")
 st.write("Benvenuto nel repository interattivo di **Wild Data**, la serie di analisi dati e inchieste visuali curate da **A Wild Pixel**.")
@@ -8,7 +13,6 @@ st.write("Benvenuto nel repository interattivo di **Wild Data**, la serie di ana
 st.markdown("---")
 
 st.subheader("📂 Naviga tra le analisi disponibili")
-st.info("👈 Usa il menu nella barra laterale sinistra per selezionare l'inchiesta o l'analisi dati che desideri esplorare.")
 
 col1, col2 = st.columns(2)
 
@@ -18,6 +22,10 @@ with col1:
     Mappa interattiva e analisi sui flussi di commercio esotico verso l'Italia. Confronta le importazioni ufficialmente autorizzate con i volumi delle confisce effettuate alle dogane.
     """)
     st.caption("Status: **Completato** | Tematica: *Biodiversità e Traffico Illecito*")
+    
+    # Pulsante per aprire direttamente la prima analisi
+    if st.button("🚀 Apri l'Analisi #01", type="primary"):
+        st.switch_page("pages/01_Sequestri_CITES.py")
 
 with col2:
     st.markdown("### 🔄 Prossime Inchieste (In Arrivo)")
