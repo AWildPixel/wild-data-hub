@@ -10,6 +10,14 @@ st.set_page_config(page_title="Wild Data - CITES Italia", layout="wide")
 st.title("Wild Data 🐾 | Analisi CITES Italia")
 st.write("Esplora le rotte dell'importazione di specie esotiche verso l'Italia. Passa dal mercato legale ai sequestri doganali.")
 
+# Box informativo espandibile con la spiegazione
+with st.expander("ℹ️ Come leggere la mappa e i dati"):
+    st.markdown("""
+    * **Mercato Legale vs Sequestri:** Usa i pulsanti in alto sopra la mappa per passare dai dati sul commercio autorizzato alle registrazioni delle confisce doganali (`Source = I`).
+    * **Intensità del colore:** Più il colore del Paese d'origine è scuro, maggiore è il numero di transazioni e spedizioni registrate verso l'Italia nel decennio 2013-2023.
+    * **Prevalenza Tassonomica:** Passa il cursore (o tocca da mobile) sui singoli Paesi per vedere il numero totale di registrazioni e la classe di specie maggiormente rappresentata.
+    """)
+
 @st.cache_data
 def load_data():
     df = pd.read_csv('cites.csv', low_memory=False)
@@ -52,6 +60,28 @@ try:
             ]
         )]
     )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Sezione finale di contesto e risultati
+    st.markdown("---")
+    st.subheader("📌 Key Insights dell'Analisi")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        **🦎 Dominanza Tassonomica:**  
+        A fronte dell'attenzione mediatica focalizzata sui mammiferi, il sommerso intercettato alle dogane italiane riguarda in larga prevalenza la classe dei **Rettili** e relativi derivati.
+        """)
+        
+    with col2:
+        st.markdown("""
+        **🇺🇸 Origine dei Sequestri:**  
+        Il maggior volume di confisce ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub commerciale mondiale per l'allevamento e il collezionismo esotico.
+        """)
+
+except Exception as e:
+    st.error(f"Errore nel caricamento del grafico: {e}")
 
     st.plotly_chart(fig, use_container_width=True)
 except Exception as e:
