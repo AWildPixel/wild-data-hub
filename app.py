@@ -1,11 +1,18 @@
 import streamlit as st
 
-# Impostiamo la sidebar visibile di default
+# Configurazione pagina e sidebar visibile
 st.set_page_config(
     page_title="Wild Data Hub | A Wild Pixel", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Registrazione delle pagine per il menu laterale e la navigazione
+home_page = st.Page("app.py", title="Home Hub", icon="🏠")
+project_1 = st.Page("pages/01_Sequestri_CITES.py", title="#01 Sequestri CITES", icon="📊")
+
+# Attivazione della navigazione native di Streamlit
+pg = st.navigation([home_page, project_1])
 
 st.title("Wild Data 🐾 | Data Journalism & Visual Inquiries")
 st.write("Benvenuto nel repository interattivo di **Wild Data**, la serie di analisi dati e inchieste visuali curate da **A Wild Pixel**.")
@@ -23,9 +30,9 @@ with col1:
     """)
     st.caption("Status: **Completato** | Tematica: *Biodiversità e Traffico Illecito*")
     
-    # Pulsante per aprire direttamente la prima analisi
+    # Pulsante di navigazione sicura con il nuovo sistema di pagine
     if st.button("🚀 Apri l'Analisi #01", type="primary"):
-        st.switch_page("pages/01_Sequestri_CITES.py")
+        st.switch_page(project_1)
 
 with col2:
     st.markdown("### 🔄 Prossime Inchieste (In Arrivo)")
@@ -36,3 +43,6 @@ with col2:
 
 st.markdown("---")
 st.markdown("💡 *Progetto ideato e realizzato da **A Wild Pixel**.*")
+
+# Esecuzione della pagina selezionata
+pg.run()
