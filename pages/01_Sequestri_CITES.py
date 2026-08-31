@@ -12,9 +12,9 @@ st.write("Esplora le rotte dell'importazione di specie esotiche verso l'Italia. 
 
 with st.expander("ℹ️ Come leggere la mappa e i dati"):
     st.markdown("""
-    * **Mercato Legale vs Sequestri:** Usa i pulsanti in alto sopra la mappa per passare dai dati sul commercio autorizzato alle registrazioni delle confisce doganali (`Source = I`).
+    * **Mercato Legale vs Sequestri:** Usa i pulsanti in alto sopra la mappa per passare dai dati sul commercio autorizzato alle registrazioni delle confische doganali (Source = I).
     * **Intensità del colore:** Più il colore del Paese d'origine è scuro, maggiore è il numero di transazioni e spedizioni registrate verso l'Italia nel decennio 2013-2023.
-    * **Prevalenza Tassonomica:** Passa il cursore (o tocca da mobile) sui singoli Paesi per vedere il numero totale di registrazioni e la classe di specie maggiormente rappresentata.
+    * **Gruppo di animali prevalente:** Passa il cursore (o tocca da mobile) sui singoli Paesi per vedere il numero totale di registrazioni e il gruppo di animali più rappresentato.
     """)
 
 @st.cache_data
@@ -53,9 +53,22 @@ try:
         geo=dict(showframe=False, showcoastlines=True, projection_type='natural earth'),
         updatemenus=[dict(
             type='buttons', direction='right', x=0.5, y=1.1, xanchor='center',
+            bgcolor='#1A1C23',
+            bordercolor='#333333',
+            font=dict(color='#FFFFFF', size=13),
             buttons=[
-                dict(label='🌿 Mercato Legale', method='update', args=[{'visible': [True, False]}]),
-                dict(label='🚨 Sequestri', method='update', args=[{'visible': [False, True]}])
+                dict(
+                    label='🌿 Mercato Legale', 
+                    method='update', 
+                    args=[{'visible': [True, False]}],
+                    execute=True
+                ),
+                dict(
+                    label='🚨 Sequestri', 
+                    method='update', 
+                    args=[{'visible': [False, True]}],
+                    execute=True
+                )
             ]
         )]
     )
@@ -68,14 +81,14 @@ try:
     
     with col1:
         st.markdown("""
-        **🦎 Dominanza Tassonomica:**  
-        A fronte dell'attenzione mediatica focalizzata sui mammiferi, il sommerso intercettato alle dogane italiane riguarda in larga prevalenza la classe dei **Rettili** e relativi derivati.
+        **🦎 Gruppo di animali prevalente:**  
+        Il gruppo di animali più spesso intercettato dalle dogane italiane è quello dei rettili! I mammiferi invece si piazzano al secondo posto.
         """)
         
     with col2:
         st.markdown("""
         **🇺🇸 Origine dei Sequestri:**  
-        Il maggior volume di confisce ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub commerciale mondiale per l'allevamento e il collezionismo esotico.
+        Il maggior volume di confische ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub commerciale mondiale per l'allevamento e il collezionismo esotico.
         """)
 
     st.markdown("---")
