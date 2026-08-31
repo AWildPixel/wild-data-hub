@@ -17,7 +17,7 @@ def mostra_home():
 
     with col1:
         st.markdown("### 📊 #01 — Sequestri Esotici CITES Italia (2013-2023)")
-        st.write("Mappa interattiva e analisi sui flussi di commercio esotico verso l'Italia. Confronta le importazioni ufficialmente autorizzate con i volumi delle confisce effettuate alle dogane.")
+        st.write("Mappa interattiva e analisi sui flussi di commercio esotico verso l'Italia. Confronta le importazioni ufficialmente autorizzate con i volumi delle confische effettuate alle dogane.")
         st.caption("Status: **Completato** | Tematica: *Biodiversità e Traffico Illecito*")
         st.info("👆 Clicca su **#01 Sequestri CITES** nel menu in alto per visualizzare l'analisi.")
 
