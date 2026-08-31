@@ -12,7 +12,7 @@ st.write("Esplora le rotte dell'importazione di specie esotiche verso l'Italia. 
 
 with st.expander("ℹ️ Come leggere la mappa e i dati"):
     st.markdown("""
-    * **Mercato Legale vs Sequestri:** Usa i pulsanti in alto sopra la mappa per passare dai dati sul commercio autorizzato alle registrazioni delle confische doganali (Source = I).
+    * **Mercato Legale vs Sequestri:** Usa i pulsanti sopra la mappa per passare dai dati sul commercio autorizzato alle registrazioni delle confische doganali.
     * **Intensità del colore:** Più il colore del Paese d'origine è scuro, maggiore è il numero di transazioni e spedizioni registrate verso l'Italia nel decennio 2013-2023.
     * **Gruppo di animali prevalente:** Passa il cursore (o tocca da mobile) sui singoli Paesi per vedere il numero totale di registrazioni e il gruppo di animali più rappresentato.
     """)
@@ -35,42 +35,33 @@ def load_data():
 try:
     df_legale, df_illegale = load_data()
 
+    # Utilizziamo la selezione nativa di Streamlit (Standard First)
+    st.write("") 
+    scelta = st.radio(
+        "Seleziona i dati da visualizzare:",
+        ["🌿 Mercato Legale", "🚨 Sequestri"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
     fig = go.Figure()
 
-    fig.add_trace(go.Choropleth(
-        locations=df_legale['iso3'], z=df_legale['Conteggio'], text=df_legale['Classe_Dominante'],
-        hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Prevalenza: <b>%{text}</b><extra></extra>",
-        colorscale='Greens', name='Legale', visible=True
-    ))
-
-    fig.add_trace(go.Choropleth(
-        locations=df_illegale['iso3'], z=df_illegale['Conteggio'], text=df_illegale['Classe_Dominante'],
-        hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Prevalenza: <b>%{text}</b><extra></extra>",
-        colorscale='Reds', name='Sequestri', visible=False
-    ))
+    if scelta == "🌿 Mercato Legale":
+        fig.add_trace(go.Choropleth(
+            locations=df_legale['iso3'], z=df_legale['Conteggio'], text=df_legale['Classe_Dominante'],
+            hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
+            colorscale='Greens', name='Legale'
+        ))
+    else:
+        fig.add_trace(go.Choropleth(
+            locations=df_illegale['iso3'], z=df_illegale['Conteggio'], text=df_illegale['Classe_Dominante'],
+            hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
+            colorscale='Reds', name='Sequestri'
+        ))
 
     fig.update_layout(
         geo=dict(showframe=False, showcoastlines=True, projection_type='natural earth'),
-        updatemenus=[dict(
-            type='buttons', direction='right', x=0.5, y=1.1, xanchor='center',
-            bgcolor='#1A1C23',
-            bordercolor='#333333',
-            font=dict(color='#FFFFFF', size=13),
-            buttons=[
-                dict(
-                    label='🌿 Mercato Legale', 
-                    method='update', 
-                    args=[{'visible': [True, False]}],
-                    execute=True
-                ),
-                dict(
-                    label='🚨 Sequestri', 
-                    method='update', 
-                    args=[{'visible': [False, True]}],
-                    execute=True
-                )
-            ]
-        )]
+        margin=dict(l=0, r=0, t=10, b=0)
     )
 
     st.plotly_chart(fig, use_container_width=True)
