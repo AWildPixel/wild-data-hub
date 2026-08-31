@@ -1,23 +1,12 @@
 import streamlit as st
 
-# Configurazione pagina
 st.set_page_config(
     page_title="Wild Data Hub | A Wild Pixel", 
     layout="wide"
 )
 
-# 1. Registro delle Pagine (Per aggiungere un nuovo progetto in futuro, basterà aggiungere una riga qui!)
-home_page = st.Page("app.py", title="Home Hub", icon="🏠", default=True)
-progetto_1 = st.Page("pages/01_Sequestri_CITES.py", title="#01 Sequestri CITES", icon="📊")
-
-# 2. Configurazione Menu e Navigazione
-pg = st.navigation(
-    {"Home": [home_page], "Inchieste": [progetto_1]}, 
-    position="top"
-)
-
-# 3. Contenuto della Home Page
-if pg.selected == home_page:
+# 1. Racchiudiamo il contenuto della Home in una funzione
+def mostra_home():
     st.title("Wild Data 🐾 | Data Journalism & Visual Inquiries")
     st.write("Benvenuto nel repository interattivo di **Wild Data**, la serie di analisi dati e inchieste visuali curate da **A Wild Pixel**.")
 
@@ -30,10 +19,7 @@ if pg.selected == home_page:
         st.markdown("### 📊 #01 — Sequestri Esotici CITES Italia (2013-2023)")
         st.write("Mappa interattiva e analisi sui flussi di commercio esotico verso l'Italia. Confronta le importazioni ufficialmente autorizzate con i volumi delle confisce effettuate alle dogane.")
         st.caption("Status: **Completato** | Tematica: *Biodiversità e Traffico Illecito*")
-        
-        # Pulsante diretto che sblocca l'accesso al progetto
-        if st.button("🚀 Apri Analisi #01", use_container_width=True):
-            st.switch_page(progetto_1)
+        st.info("👆 Clicca su **#01 Sequestri CITES** nel menu in alto per visualizzare l'analisi.")
 
     with col2:
         st.markdown("### 🔄 Prossime Inchieste (In Arrivo)")
@@ -43,5 +29,13 @@ if pg.selected == home_page:
     st.markdown("---")
     st.markdown("💡 *Progetto ideato e realizzato da **A Wild Pixel**.*")
 
-# 4. Esecuzione
+# 2. Definiamo le pagine (la Home ora punta alla funzione, non al file)
+home_page = st.Page(mostra_home, title="Home Hub", icon="🏠", default=True)
+progetto_1 = st.Page("pages/01_Sequestri_CITES.py", title="#01 Sequestri CITES", icon="📊")
+
+# 3. Creiamo e avviamo la navigazione in alto
+pg = st.navigation(
+    {"Home": [home_page], "Inchieste": [progetto_1]}, 
+    position="top"
+)
 pg.run()
