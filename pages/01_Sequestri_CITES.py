@@ -78,5 +78,33 @@ try:
         Il maggior volume di confisce ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub commerciale mondiale per l'allevamento e il collezionismo esotico.
         """)
 
+    st.markdown("---")
+    st.markdown("### 🧬 Le Specie più Confiscate (Dati Reali Dogane)")
+    col_a, col_b, col_c = st.columns(3)
+    
+    with col_a:
+        st.markdown("""
+        **Rettili (Reptilia)**
+        * *Alligator mississippiensis* (Alligatore americano)
+        * *Malayopython reticulatus* (Pitone reticolato)
+        * *Caiman crocodilus fuscus* (Caimano bruno)
+        """)
+        
+    with col_b:
+        st.markdown("""
+        **Mammiferi (Mammalia)**
+        * *Vicugna vicugna* (Vigogna)
+        * *Loxodonta africana* (Elefante africano)
+        * *Macaca mulatta* (Macaco rhesus)
+        """)
+        
+    with col_c:
+        st.markdown("""
+        **Altre Classi**
+        * **Coralli:** *Scleractinia spp.* (Madrepore)
+        * **Molluschi:** *Strombus gigas* (Strombo gigante)
+        * **Uccelli:** *Pavo cristatus* (Pavone indiano)
+        """)
+
 except Exception as e:
     st.error(f"Errore nel caricamento del grafico: {e}")
