@@ -45,12 +45,16 @@ try:
 
     fig = go.Figure()
 
+    # Nuova configurazione barra: titolo centrato in alto, scostata in basso (y=-0.25)
     colorbar_orizzontale = dict(
         orientation="h",
-        y=-0.15,
+        y=-0.25,
         thickness=15,
         len=0.7,
-        title="Volume registrazioni"
+        title=dict(
+            text="Volume registrazioni",
+            side="top"
+        )
     )
 
     if scelta == "🌿 Mercato Legale":
@@ -93,7 +97,6 @@ try:
 
     st.markdown("---")
     
-    # SEZIONE: PRINCIPALI UTILIZZI PER GRUPPO ANIMALE
     st.subheader("🎯 Destinazione d'uso principale per gruppo di animali")
     st.caption("Analisi basata sui dati doganali reali (specie confiscate e commercio autorizzato).")
     
