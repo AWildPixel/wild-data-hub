@@ -35,7 +35,6 @@ def load_data():
 try:
     df_legale, df_illegale = load_data()
 
-    # Utilizziamo la selezione nativa di Streamlit (Standard First)
     st.write("") 
     scelta = st.radio(
         "Seleziona i dati da visualizzare:",
@@ -46,17 +45,27 @@ try:
 
     fig = go.Figure()
 
+    colorbar_orizzontale = dict(
+        orientation="h",
+        y=-0.15,
+        thickness=15,
+        len=0.7,
+        title="Volume registrazioni"
+    )
+
     if scelta == "🌿 Mercato Legale":
         fig.add_trace(go.Choropleth(
             locations=df_legale['iso3'], z=df_legale['Conteggio'], text=df_legale['Classe_Dominante'],
             hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
-            colorscale='Greens', name='Legale'
+            colorscale='Greens', name='Legale',
+            colorbar=colorbar_orizzontale
         ))
     else:
         fig.add_trace(go.Choropleth(
             locations=df_illegale['iso3'], z=df_illegale['Conteggio'], text=df_illegale['Classe_Dominante'],
             hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
-            colorscale='Reds', name='Sequestri'
+            colorscale='Reds', name='Sequestri',
+            colorbar=colorbar_orizzontale
         ))
 
     fig.update_layout(
@@ -80,6 +89,35 @@ try:
         st.markdown("""
         **🇺🇸 Origine dei Sequestri:**  
         Il maggior volume di confische ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub commerciale mondiale per l'allevamento e il collezionismo esotico.
+        """)
+
+    st.markdown("---")
+    
+    # SEZIONE: PRINCIPALI UTILIZZI PER GRUPPO ANIMALE
+    st.subheader("🎯 Destinazione d'uso principale per gruppo di animali")
+    st.caption("Analisi basata sui dati doganali reali (specie confiscate e commercio autorizzato).")
+    
+    col_u1, col_u2, col_u3 = st.columns(3)
+    
+    with col_u1:
+        st.markdown("""
+        **🦎 Rettili**
+        * **Principale utilizzo:** Alta Moda e Pelletteria
+        * **Dettaglio:** Pelli lavorate, cinturini, borse e calzature (in particolare pelli di Alligatore, Pitone e Caimano) destinate alla filiera del lusso.
+        """)
+        
+    with col_u2:
+        st.markdown("""
+        **🐘 Mammiferi**
+        * **Principale utilizzo:** Tessile di Lusso e Trofei
+        * **Dettaglio:** Lana di Vigogna e trofei di caccia. Una quota minore riguarda il collezionismo privato e la ricerca scientifica.
+        """)
+        
+    with col_u3:
+        st.markdown("""
+        **🪸 Coralli e Altri Gruppi**
+        * **Principale utilizzo:** Souvenir e Arredamento
+        * **Dettaglio:** Scheletri di madrepora e conchiglie usati come oggetti d'arredo o souvenir turistici non dichiarati.
         """)
 
     st.markdown("---")
