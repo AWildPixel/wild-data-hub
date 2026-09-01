@@ -45,7 +45,6 @@ try:
 
     fig = go.Figure()
 
-    # Nuova configurazione barra: titolo centrato in alto, scostata in basso (y=-0.25)
     colorbar_orizzontale = dict(
         orientation="h",
         y=-0.25,
@@ -150,6 +149,15 @@ try:
         * **Molluschi:** *Strombus gigas* (Strombo gigante)
         * **Uccelli:** *Pavo cristatus* (Pavone indiano)
         """)
+
+    # NUOVA SEZIONE: FONTI E METODOLOGIA
+    st.markdown("---")
+    st.subheader("📚 Fonti e Metodologia")
+    st.markdown("""
+    * **La Banca Dati CITES:** I dati utilizzati in questa analisi provengono dalla **CITES Trade Database**, gestita dallo UNEP-WCMC (UN Environment Programme World Conservation Monitoring Centre) per conto del Segretariato CITES. Si tratta del registro ufficiale globale che raccoglie tutte le transazioni commerciali, le esportazioni autorizzate e i sequestri doganali di specie della fauna e della flora selvatiche minacciate di estinzione.
+    * **Periodo di riferimento:** 2013–2023.
+    * Puoi esplorare e scaricare i dati grezzi originali direttamente sul sito ufficiale: [CITES Trade Database](https://trade.cites.org/).
+    """)
 
 except Exception as e:
     st.error(f"Errore nel caricamento del grafico: {e}")
