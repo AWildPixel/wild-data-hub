@@ -43,7 +43,6 @@ try:
         label_visibility="collapsed"
     )
 
-    # Titoli Dinamici e non ridondanti (Information Design)
     if scelta == "🌿 Mercato Legale":
         st.markdown("### 🌍 Un mercato globale tracciato: volumi massicci ma legali")
         st.write("La rete delle importazioni autorizzate copre quasi tutto il globo. Non si tratta di traffico illecito, ma di un sistema strettamente monitorato che serve principalmente le filiere produttive e gli scambi tra parchi e istituti europei.")
@@ -81,8 +80,15 @@ try:
             marker_line_width=0
         ))
 
+    # Qui è dove avviene la magia dell'Opzione 1
     fig.update_layout(
-        geo=dict(showframe=False, showcoastlines=True, projection_type='natural earth'),
+        geo=dict(
+            showframe=False, 
+            showcoastlines=False, 
+            showland=True, 
+            landcolor='#E5E5E5',
+            projection_type='natural earth'
+        ),
         margin=dict(l=0, r=0, t=10, b=10)
     )
 
