@@ -45,7 +45,7 @@ try:
 
     if scelta == "🌿 Mercato Legale":
         totale_legale = df_legale['Conteggio'].sum()
-        st.markdown(f"### 🌍 Mercato legale: un traffico da {totale_legale:,} registrazioni".replace(",", "."))
+        st.markdown(f"### 🌍 Mercato legale: un traffico da {totale_legale:,} animali".replace(",", "."))
         st.write("La rete delle importazioni autorizzate copre quasi tutto il globo. Non si tratta di commercio illecito, ma di un sistema strettamente monitorato che serve principalmente le filiere produttive e gli scambi tra parchi e istituti europei.")
     else:
         st.markdown("### 🚨 Il caso USA: da dove arriva la maggior parte dei sequestri")
