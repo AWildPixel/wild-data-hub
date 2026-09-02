@@ -69,7 +69,7 @@ try:
             hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Greens', name='Legale',
             colorbar=colorbar_orizzontale,
-            marker_line_width=0
+            marker_line_color='#4A4A4A', marker_line_width=0.5
         ))
     else:
         fig.add_trace(go.Choropleth(
@@ -77,14 +77,14 @@ try:
             hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Reds', name='Sequestri',
             colorbar=colorbar_orizzontale,
-            marker_line_width=0
+            marker_line_color='#4A4A4A', marker_line_width=0.5
         ))
 
-    # Qui è dove avviene la magia dell'Opzione 1
     fig.update_layout(
         geo=dict(
             showframe=False, 
-            showcoastlines=False, 
+            showcoastlines=True,
+            coastlinecolor='#4A4A4A',
             showland=True, 
             landcolor='#E5E5E5',
             projection_type='natural earth'
