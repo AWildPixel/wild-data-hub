@@ -44,11 +44,12 @@ try:
     )
 
     if scelta == "🌿 Mercato Legale":
-        st.markdown("### 🌍 Un mercato globale tracciato: volumi massicci ma legali")
-        st.write("La rete delle importazioni autorizzate copre quasi tutto il globo. Non si tratta di traffico illecito, ma di un sistema strettamente monitorato che serve principalmente le filiere produttive e gli scambi tra parchi e istituti europei.")
+        totale_legale = df_legale['Conteggio'].sum()
+        st.markdown(f"### 🌍 Mercato legale: un traffico da {totale_legale:,} registrazioni".replace(",", "."))
+        st.write("La rete delle importazioni autorizzate copre quasi tutto il globo. Non si tratta di commercio illecito, ma di un sistema strettamente monitorato che serve principalmente le filiere produttive e gli scambi tra parchi e istituti europei.")
     else:
-        st.markdown("### 🚨 L'anomalia americana: l'hub mondiale delle confische")
-        st.write("Perché proprio gli USA? Il Nord America è il centro nevralgico per l'allevamento di specie esotiche e l'esportazione di pelli lavorate. L'alta concentrazione di fiere di settore e collezionisti genera un volume di spedizioni irregolari superiore a quello di Africa e Asia verso l'Italia.")
+        st.markdown("### 🚨 Il caso USA: da dove arriva la maggior parte dei sequestri")
+        st.write("Perché proprio gli USA? Il Nord America è un centro nevralgico per l'allevamento di specie esotiche e l'esportazione di pelli lavorate. L'alta concentrazione di fiere di settore e collezionisti genera un volume di spedizioni irregolari superiore a quello di Africa e Asia verso l'Italia.")
 
     fig = go.Figure()
 
