@@ -43,13 +43,21 @@ try:
         label_visibility="collapsed"
     )
 
+    # Titoli Dinamici e non ridondanti (Information Design)
+    if scelta == "🌿 Mercato Legale":
+        st.markdown("### 🌍 Un mercato globale tracciato: volumi massicci ma legali")
+        st.write("La rete delle importazioni autorizzate copre quasi tutto il globo. Non si tratta di traffico illecito, ma di un sistema strettamente monitorato che serve principalmente le filiere produttive e gli scambi tra parchi e istituti europei.")
+    else:
+        st.markdown("### 🚨 L'anomalia americana: l'hub mondiale delle confische")
+        st.write("Perché proprio gli USA? Il Nord America è il centro nevralgico per l'allevamento di specie esotiche e l'esportazione di pelli lavorate. L'alta concentrazione di fiere di settore e collezionisti genera un volume di spedizioni irregolari superiore a quello di Africa e Asia verso l'Italia.")
+
     fig = go.Figure()
 
     colorbar_orizzontale = dict(
         orientation="h",
-        y=-0.25,
-        thickness=15,
-        len=0.7,
+        y=-0.15,
+        thickness=12,
+        len=0.8,
         title=dict(
             text="Volume registrazioni",
             side="top"
@@ -61,19 +69,21 @@ try:
             locations=df_legale['iso3'], z=df_legale['Conteggio'], text=df_legale['Classe_Dominante'],
             hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Greens', name='Legale',
-            colorbar=colorbar_orizzontale
+            colorbar=colorbar_orizzontale,
+            marker_line_color='white', marker_line_width=0.5
         ))
     else:
         fig.add_trace(go.Choropleth(
             locations=df_illegale['iso3'], z=df_illegale['Conteggio'], text=df_illegale['Classe_Dominante'],
             hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Reds', name='Sequestri',
-            colorbar=colorbar_orizzontale
+            colorbar=colorbar_orizzontale,
+            marker_line_color='white', marker_line_width=0.5
         ))
 
     fig.update_layout(
         geo=dict(showframe=False, showcoastlines=True, projection_type='natural earth'),
-        margin=dict(l=0, r=0, t=10, b=0)
+        margin=dict(l=0, r=0, t=10, b=10)
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -96,8 +106,8 @@ try:
 
     st.markdown("---")
     
-    st.subheader("🎯 Destinazione d'uso principale per gruppo di animali")
-    st.caption("Analisi basata sui dati doganali reali (specie confiscate e commercio autorizzato).")
+    st.subheader("🎯 Moda e Trofei di lusso guidano la domanda")
+    st.write("I dati rivelano che il traffico (sia legale che illecito) non è trainato solo dal collezionismo privato. A muovere i volumi maggiori sono le catene di approvvigionamento per il settore del lusso e il turismo irresponsabile.")
     
     col_u1, col_u2, col_u3 = st.columns(3)
     
@@ -123,7 +133,9 @@ try:
         """)
 
     st.markdown("---")
-    st.markdown("### 🧬 Le Specie più Confiscate (Dati Reali Dogane)")
+    st.markdown("### 🧬 Il bersaglio: dai piccoli coralli ai grandi mammiferi")
+    st.write("Le dogane non intercettano solo animali vivi. Gran parte dei sequestri riguarda parti o derivati lavorati di queste specie specifiche.")
+    
     col_a, col_b, col_c = st.columns(3)
     
     with col_a:
@@ -150,7 +162,6 @@ try:
         * **Uccelli:** *Pavo cristatus* (Pavone indiano)
         """)
 
-    # NUOVA SEZIONE: FONTI E METODOLOGIA
     st.markdown("---")
     st.subheader("📚 Fonti e Metodologia")
     st.markdown("""
