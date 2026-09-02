@@ -70,7 +70,7 @@ try:
             hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Greens', name='Legale',
             colorbar=colorbar_orizzontale,
-            marker_line_color='white', marker_line_width=0.5
+            marker_line_width=0
         ))
     else:
         fig.add_trace(go.Choropleth(
@@ -78,7 +78,7 @@ try:
             hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Reds', name='Sequestri',
             colorbar=colorbar_orizzontale,
-            marker_line_color='white', marker_line_width=0.5
+            marker_line_width=0
         ))
 
     fig.update_layout(
