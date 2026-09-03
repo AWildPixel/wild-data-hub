@@ -1,33 +1,25 @@
-# 🐾 Wild Data #01 — Sequestri Esotici CITES Italia
+# Wild Data 🐾 | by A Wild Pixel
 
-Analisi dati e dashboard interattiva sulle rotte di importazione di specie esotiche CITES verso l'Italia (2013-2023). 
+**Wild Data** è un progetto di divulgazione scientifica e data journalism dedicato alla natura, alla conservazione ambientale e all'analisi dei fenomeni che minacciano la biodiversità. 
 
-🌐 **Web App Interattiva:** [Accedi alla Dashboard](https://wilddata-sequestri-esotici-cites-italia.streamlit.app)
+Nato come estensione interattiva del canale Instagram **A Wild Pixel**, questo hub raccoglie indagini basate sui dati (ufficiali e verificati) per trasformare numeri complessi in storie visive, accessibili e impattanti.
 
----
+## 🗂️ L'Archivio delle Inchieste
+L'infrastruttura è costruita come un'app multipagina. Qui sotto l'indice degli episodi pubblicati:
 
-## 📌 Context & Scope
-Il progetto nasce per verificare empiricamente i flussi di commercio esotico verso l'Italia, mettendo a confronto i dati ufficiali delle importazioni autorizzate con le registrazioni dei sequestri e delle confische doganali.
+* **#01 - Sequestri CITES Italia**: *Esplora le rotte dell'importazione di specie esotiche e l'impatto del mercato illegale.* 
+* *(Prossimi episodi in lavorazione...)*
 
-### Key Insights
-* **Dominanza Tassonomica:** A fronte di una forte attenzione mediatica sui mammiferi, il sommerso intercettato alle dogane italiane riguarda in larga prevalenza la classe dei **Rettili**.
-* **Provenienza dei Sequestri:** Il maggior volume di confische ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub mondiale di allevamento e collezionismo esotico.
+## 🛠️ Stack Tecnologico
+* **Analisi Dati**: Python, Pandas
+* **Data Visualization**: Plotly
+* **Frontend & Hosting**: Streamlit Community Cloud
+* **Infrastruttura Anti-Sleep**: Architettura multipagina con mantenimento del server 24/7 tramite GitHub Actions (Playwright / Chromium headless browser). L'automazione aggira l'ibernazione di Streamlit innescando la connessione WebSocket ogni 6 ore.
 
----
-
-## 📊 Data Source & Methodology
-* **Fonte Dati:** [CITES Trade Database](https://trade.cites.org/) (2013-2023).
-* **Filtri applicati:** Paese importatore = Italia (`IT`).
-* **Segregazione:** Classificazione delle transazioni in *Legali* (tutti i codici di provenienza standard) vs *Sequestri/Confische* (`Source == 'I'`).
-
----
-
-## 🛠️ Tech Stack
-* **Python** (Pandas, Plotly, Country Converter)
-* **Streamlit** (Messa in produzione della Web App)
+## 📚 Metodologia e Trasparenza
+La regola base di *Wild Data* è l'assoluta aderenza alle fonti. Tutti i dataset utilizzati provengono esclusivamente da database internazionali (es. CITES, IUCN, UNEP) o enti di ricerca. I link diretti ai dati grezzi e alla metodologia sono sempre inclusi in calce a ogni pagina del progetto per garantirne la totale verificabilità.
 
 ---
-
-## 👤 Credits & Author
-Progetto ideato e sviluppato per **A Wild Pixel** nell'ambito del format **Wild Data**.
-
+🔗 **Link Utili**
+* 📊 [Esplora l'App Interattiva Wild Data](https://inserisci-qui-il-tuo-link-streamlit.app)
+* 📸 [A Wild Pixel su Instagram](https://instagram.com/inserisci-il-tuo-tag)
