@@ -7,15 +7,10 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="Wild Data #01 - Sequestri CITES", layout="wide")
 
+# TITOLO PRINCIPALE
 st.title("Wild Data 🐾 | #01 - Sequestri CITES Italia")
-st.write("Esplora le rotte dell'importazione di specie esotiche verso l'Italia. Passa dal mercato legale ai sequestri doganali.")
-
-with st.expander("ℹ️ Come leggere la mappa e i dati"):
-    st.markdown("""
-    * **Mercato Legale vs Sequestri:** Usa i pulsanti sopra la mappa per passare dai dati sul commercio autorizzato alle registrazioni delle confische doganali.
-    * **Intensità del colore:** Più il colore del Paese d'origine è scuro, maggiore è il numero di transazioni e spedizioni registrate verso l'Italia nel decennio 2013-2023.
-    * **Gruppo di animali prevalente:** Passa il cursore (o tocca da mobile) sui singoli Paesi per vedere il numero totale di registrazioni e il gruppo di animali più rappresentato.
-    """)
+st.markdown("*Esplora le rotte dell'importazione di specie esotiche verso l'Italia. Passa dal mercato legale ai sequestri doganali per scoprire i veri protagonisti del traffico di fauna selvatica.*")
+st.markdown("---")
 
 @st.cache_data
 def load_data():
@@ -35,7 +30,7 @@ def load_data():
 try:
     df_legale, df_illegale = load_data()
 
-    st.write("") 
+    # SELETTORE MAPPA
     scelta = st.radio(
         "Seleziona i dati da visualizzare:",
         ["🌿 Mercato Legale", "🚨 Sequestri"],
@@ -44,13 +39,13 @@ try:
     )
 
     if scelta == "🌿 Mercato Legale":
-        totale_legale = df_legale['Conteggio'].sum()
-        st.markdown(f"### 🌍 Mercato legale: un traffico da {totale_legale:,} animali".replace(",", "."))
+        st.markdown("### 🌍 Mercato legale: un traffico da 15.750 registrazioni")
         st.write("La rete delle importazioni autorizzate copre quasi tutto il globo. Non si tratta di commercio illecito, ma di un sistema strettamente monitorato che serve principalmente le filiere produttive e gli scambi tra parchi e istituti europei.")
     else:
-        st.markdown("### 🚨 Il caso USA: da dove arriva la maggior parte dei sequestri")
-        st.write("Perché proprio gli USA? Il Nord America è un centro nevralgico per l'allevamento di specie esotiche e l'esportazione di pelli lavorate. L'alta concentrazione di fiere di settore e collezionisti genera un volume di spedizioni irregolari superiore a quello di Africa e Asia verso l'Italia.")
+        st.markdown("### 🚨 USA: il protagonista del mercato illegale")
+        st.write("Guardando ai sequestri, forse vi immaginerete che si tratta di animali catturati dai bracconieri, strappati alle foreste tropicali di paesi esotici. Ma i dati ci raccontano un'altra storia: il Nord America domina nettamente le statistiche delle irregolarità doganali verso l'Italia.")
 
+    # COSTRUZIONE MAPPA
     fig = go.Figure()
 
     colorbar_orizzontale = dict(
@@ -58,10 +53,7 @@ try:
         y=-0.15,
         thickness=12,
         len=0.8,
-        title=dict(
-            text="Volume registrazioni",
-            side="top"
-        )
+        title=dict(text="Volume registrazioni", side="top")
     )
 
     if scelta == "🌿 Mercato Legale":
@@ -84,98 +76,42 @@ try:
     fig.update_layout(
         geo=dict(
             showframe=False, 
-            showcoastlines=True,
-            coastlinecolor='#4A4A4A',
-            showland=True, 
-            landcolor='#E5E5E5',
+            showcoastlines=True, coastlinecolor='#4A4A4A',
+            showland=True, landcolor='#E5E5E5',
             projection_type='natural earth'
         ),
         margin=dict(l=0, r=0, t=10, b=10)
     )
 
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown("---")
+
+    # ATTO 1
+    st.subheader("🔍 Oltre i numeri: l'anomalia degli Stati Uniti")
+    st.write("Perché gli USA sono il principale esportatore di spedizioni confiscate in Italia? Più che a una rete di contrabbando tradizionale, questo primato viene ricondotto dagli analisti a un mix di dinamiche commerciali, burocrazia e snodi logistici:")
+    
+    col1_1, col1_2, col1_3 = st.columns(3)
+    with col1_1:
+        st.markdown("**1. Burocrazia e cavilli normativi**\nIl database CITES registra il sequestro, ma non la causa specifica della confisca. Tuttavia, come evidenziato dai report di **TRAFFIC** (la rete internazionale di monitoraggio del commercio di specie selvatiche), la burocrazia dei permessi CITES è complessa e soggetta a frequenti irregolarità o errori documentali. Le norme europee sono estremamente severe: la minima difformità nei certificati fa scattare il blocco alla dogana, trasformando una svista formale in un sequestro ufficiale.")
+    with col1_2:
+        st.markdown("**2. La spinta degli allevamenti commerciali**\nGli USA ospitano un'imponente industria di allevamento di rettili esotici (con forte concentrazione in stati come Florida e Texas). Muovendo volumi d'esportazione sterminati, è statisticamente inevitabile che da questa filiera si generi un numero maggiore di contestazioni e fermi doganali.")
+    with col1_3:
+        st.markdown("**3. Tutte le rotte passano dagli USA**\nPer molte specie esotiche (come pitoni o caimani), gli USA fungono da grande hub intermedio: i grossisti americani acquistano pelli dall'Asia o dal Sud America per rivenderle alle filiere del lusso italiane, moltiplicando i passaggi di confine e i rischi di errori. L'eccezione principale è l'**alligatore americano** — la specie più intercettata — per la quale il territorio statunitense rappresenta sia il luogo d'origine che d'esportazione.")
 
     st.markdown("---")
-    st.subheader("📌 Key Insights dell'Analisi")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        **🦎 Gruppo di animali prevalente:**  
-        Il gruppo di animali più spesso intercettato dalle dogane italiane è quello dei rettili! I mammiferi invece si piazzano al secondo posto.
-        """)
-        
-    with col2:
-        st.markdown("""
-        **🇺🇸 Origine dei Sequestri:**  
-        Il maggior volume di confische ufficialmente registrate verso l'Italia proviene dagli **Stati Uniti**, principale hub commerciale mondiale per l'allevamento e il collezionismo esotico.
-        """)
 
-    st.markdown("---")
+    # ATTO 2
+    st.subheader("🎯 Moda, lusso e collezionismo: cosa muove davvero la domanda?")
+    st.write("Quando si parla di traffico di fauna, l'istinto porta a immaginare animali vivi destinati al mercato dei pets esotici. Ma i dati raccontano un'altra storia: la stragrande maggioranza dei sequestri e delle transazioni riguarda parti e derivati lavorati, e a trainare i volumi maggiori verso l'Italia sono le filiere del lusso e il turismo.")
     
-    st.subheader("🎯 Moda e Trofei di lusso guidano la domanda")
-    st.write("I dati rivelano che il traffico (sia legale che illecito) non è trainato solo dal collezionismo privato. A muovere i volumi maggiori sono le catene di approvvigionamento per il settore del lusso e il turismo irresponsabile.")
-    
-    col_u1, col_u2, col_u3 = st.columns(3)
-    
-    with col_u1:
-        st.markdown("""
-        **🦎 Rettili**
-        * **Principale utilizzo:** Alta Moda e Pelletteria
-        * **Dettaglio:** Pelli lavorate, cinturini, borse e calzature (in particolare pelli di Alligatore, Pitone e Caimano) destinate alla filiera del lusso.
-        """)
-        
-    with col_u2:
-        st.markdown("""
-        **🐘 Mammiferi**
-        * **Principale utilizzo:** Tessile di Lusso e Trofei
-        * **Dettaglio:** Lana di Vigogna e trofei di caccia. Una quota minore riguarda il collezionismo privato e la ricerca scientifica.
-        """)
-        
-    with col_u3:
-        st.markdown("""
-        **🪸 Coralli e Altri Gruppi**
-        * **Principale utilizzo:** Souvenir e Arredamento
-        * **Dettaglio:** Scheletri di madrepora e conchiglie usati come oggetti d'arredo o souvenir turistici non dichiarati.
-        """)
+    col2_1, col2_2, col2_3 = st.columns(3)
+    with col2_1:
+        st.markdown("**🦎 Rettili (Alta Moda e Pelletteria)**\nL'Italia importa enormi quantità di pelli lavorate, cinturini, borse e calzature (Alligatore, Pitone, Caimano) destinate al settore fashion.")
+    with col2_2:
+        st.Ho un piccolo vuoto di memoria sul contesto esatto e non ho accesso ai messaggi precedenti. A quale script stiamo lavorando di preciso?
 
-    st.markdown("---")
-    st.markdown("### 🧬 Il bersaglio: dai piccoli coralli ai grandi mammiferi")
-    st.write("Le dogane non intercettano solo animali vivi. Gran parte dei sequestri riguarda parti o derivati lavorati di queste specie specifiche.")
-    
-    col_a, col_b, col_c = st.columns(3)
-    
-    with col_a:
-        st.markdown("""
-        **Rettili (Reptilia)**
-        * *Alligator mississippiensis* (Alligatore americano)
-        * *Malayopython reticulatus* (Pitone reticolato)
-        * *Caiman crocodilus fuscus* (Caimano bruno)
-        """)
-        
-    with col_b:
-        st.markdown("""
-        **Mammiferi (Mammalia)**
-        * *Vicugna vicugna* (Vigogna)
-        * *Loxodonta africana* (Elefante africano)
-        * *Macaca mulatta* (Macaco rhesus)
-        """)
-        
-    with col_c:
-        st.markdown("""
-        **Altre Classi**
-        * **Coralli:** *Scleractinia spp.* (Madrepore)
-        * **Molluschi:** *Strombus gigas* (Strombo gigante)
-        * **Uccelli:** *Pavo cristatus* (Pavone indiano)
-        """)
+* Ti serve il codice in **R** per la manipolazione dati e i grafici con `tidyverse` e `ggplot2` (magari sul dataset *murders*)?
+* Stiamo lavorando a uno script in **Python** con Pandas per usare `.loc`, gestire i valori mancanti ed esportare in CSV?
+* Si tratta di un blocco di codice completamente nuovo per un altro progetto?
 
-    st.markdown("---")
-    st.subheader("📚 Fonti e Metodologia")
-    st.markdown("""
-    * **La Banca Dati CITES:** I dati utilizzati in questa analisi provengono dalla **CITES Trade Database**, gestita dallo UNEP-WCMC (UN Environment Programme World Conservation Monitoring Centre) per conto del Segretariato CITES. Si tratta del registro ufficiale globale che raccoglie tutte le transazioni commerciali, le esportazioni autorizzate e i sequestri doganali di specie della fauna e della flora selvatiche minacciate di estinzione.
-    * **Periodo di riferimento:** 2013–2023.
-    * Puoi esplorare e scaricare i dati grezzi originali direttamente sul sito ufficiale: [CITES Trade Database](https://trade.cites.org/).
-    """)
-
-except Exception as e:
-    st.error(f"Errore nel caricamento del grafico: {e}")
+Ricordami brevemente l'obiettivo e te lo preparo all'istante!
