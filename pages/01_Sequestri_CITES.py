@@ -92,11 +92,11 @@ try:
     
     col1_1, col1_2, col1_3 = st.columns(3)
     with col1_1:
-        st.markdown("**1. Burocrazia e cavilli normativi**\nIl database CITES registra il sequestro, ma non la causa specifica della confisca. Tuttavia, come evidenziato dai report di **TRAFFIC** (la rete internazionale di monitoraggio del commercio di specie selvatiche), la burocrazia dei permessi CITES è complessa e soggetta a frequenti irregolarità o errori documentali. Le norme europee sono estremamente severe: la minima difformità nei certificati fa scattare il blocco alla dogana, trasformando una svista formale in un sequestro ufficiale.")
+        st.markdown("**1. Burocrazia e cavilli normativi**\n\nIl database CITES registra il sequestro, ma non la causa specifica della confisca. Tuttavia, come evidenziato dai report di **TRAFFIC** (la rete internazionale di monitoraggio del commercio di specie selvatiche), la burocrazia dei permessi CITES è complessa e soggetta a frequenti irregolarità o errori documentali. Le norme europee sono estremamente severe: la minima difformità nei certificati fa scattare il blocco alla dogana, trasformando una svista formale in un sequestro ufficiale.")
     with col1_2:
-        st.markdown("**2. La spinta degli allevamenti commerciali**\nGli USA ospitano un'imponente industria di allevamento di rettili esotici (con forte concentrazione in stati come Florida e Texas). Muovendo volumi d'esportazione sterminati, è statisticamente inevitabile che da questa filiera si generi un numero maggiore di contestazioni e fermi doganali.")
+        st.markdown("**2. La spinta degli allevamenti commerciali**\n\nGli USA ospitano un'imponente industria di allevamento di rettili esotici (con forte concentrazione in stati come Florida e Texas). Muovendo volumi d'esportazione sterminati, è statisticamente inevitabile che da questa filiera si generi un numero maggiore di contestazioni e fermi doganali.")
     with col1_3:
-        st.markdown("**3. Tutte le rotte passano dagli USA**\nPer molte specie esotiche (come pitoni o caimani), gli USA fungono da grande hub intermedio: i grossisti americani acquistano pelli dall'Asia o dal Sud America per rivenderle alle filiere del lusso italiane, moltiplicando i passaggi di confine e i rischi di errori. L'eccezione principale è l'**alligatore americano** — la specie più intercettata — per la quale il territorio statunitense rappresenta sia il luogo d'origine che d'esportazione.")
+        st.markdown("**3. Tutte le rotte passano dagli USA**\n\nPer molte specie esotiche (come pitoni o caimani), gli USA fungono da grande hub intermedio: i grossisti americani acquistano pelli dall'Asia o dal Sud America per rivenderle alle filiere del lusso italiane, moltiplicando i passaggi di confine e i rischi di errori nei documenti. L'eccezione principale è l'**alligatore americano** — la specie in assoluto più intercettata nei sequestri dagli USA — per la quale il territorio statunitense rappresenta sia il luogo d'origine che d'esportazione.")
 
     st.markdown("---")
 
@@ -106,12 +106,45 @@ try:
     
     col2_1, col2_2, col2_3 = st.columns(3)
     with col2_1:
-        st.markdown("**🦎 Rettili (Alta Moda e Pelletteria)**\nL'Italia importa enormi quantità di pelli lavorate, cinturini, borse e calzature (Alligatore, Pitone, Caimano) destinate al settore fashion.")
+        st.markdown("**🦎 Rettili (Alta Moda e Pelletteria)**\n\nL'Italia importa enormi quantità di pelli lavorate, cinturini, borse e calzature (Alligatore, Pitone, Caimano) destinate al settore fashion.")
     with col2_2:
-        st.Ho un piccolo vuoto di memoria sul contesto esatto e non ho accesso ai messaggi precedenti. A quale script stiamo lavorando di preciso?
+        st.markdown("**🐘 Mammiferi (Tessile e Trofei)**\n\nImportazioni dominate da filati pregiati (come la lana di Vigogna) e trofei di caccia. Una quota minore riguarda la ricerca scientifica.")
+    with col2_3:
+        st.markdown("**🪸 Coralli e Altri (Souvenir e Arredamento)**\n\nScheletri di madrepora e conchiglie usati come oggetti d'arredo o portati illegalmente dai turisti come souvenir di viaggio.")
 
-* Ti serve il codice in **R** per la manipolazione dati e i grafici con `tidyverse` e `ggplot2` (magari sul dataset *murders*)?
-* Stiamo lavorando a uno script in **Python** con Pandas per usare `.loc`, gestire i valori mancanti ed esportare in CSV?
-* Si tratta di un blocco di codice completamente nuovo per un altro progetto?
+    st.markdown("---")
 
-Ricordami brevemente l'obiettivo e te lo preparo all'istante!
+    # ATTO 3
+    st.subheader("🕵️‍♂️ I grandi assenti: i giganti della biodiversità")
+    st.write("Guardando la mappa dei sequestri, una cosa balza subito all'occhio: paesi con un patrimonio naturale immenso — come il Brasile, le nazioni del Bacino del Congo o l'Indonesia — non hanno praticamente alcun episodio di sequestro registrato verso l'Italia.")
+    st.write("Questo fenomeno rivela in realtà un profondo bias di tracciamento. La mappa, infatti, non fotografa necessariamente il luogo d'origine dell'animale (o del prodotto da esso ricavato), ma il punto in cui le autorità doganali riescono a intercettare la spedizione.")
+    st.write("Quindi anche se, ad esempio, si trattasse di un animale catturato da bracconieri, potrebbe comunque uscire dal paese inosservato a causa di controlli poco stringenti da parte delle autorità locali. A quel punto, la spedizione illegale emerge e viene registrata come \"sequestro\" ufficiale solo quando sbatte contro le più rigide ispezioni degli hub intermediari o delle dogane d'arrivo in Europa.")
+    st.write("Ma anche qui, diverse spedizioni riescono inevitabilmente a passare sotto i radar... i dati CITES ci parlano di appena **61 sequestri ufficiali** dal 2013 al 2023, ma chissà quanto del traffico illegale resta sommerso, lasciandoci intravedere giusto la punta dell'iceberg.")
+
+    st.markdown("---")
+
+    # ATTO 4
+    st.subheader("🧬 Identikit delle specie coinvolte")
+    st.write("Le registrazioni CITES ci permettono di scendere fino alla singola specie. I **rettili** costituiscono il gruppo di gran lunga più rappresentato e frequente nelle confisce doganali italiane, affiancati da alcuni casi emblematici relativi ad altre classi animali:")
+    
+    col4_1, col4_2, col4_3 = st.columns(3)
+    with col4_1:
+        st.markdown("**Rettili (Reptilia - le specie più frequenti):**\n* *Alligator mississippiensis* (Alligatore americano)\n* *Malayopython reticulatus* (Pitone reticolato)\n* *Caiman crocodilus fuscus* (Caimano bruno)")
+    with col4_2:
+        st.markdown("**Mammiferi (Mammalia - casi emblematici):**\n* *Vicugna vicugna* (Vigogna)\n* *Loxodonta africana* (Elefante africano)\n* *Macaca mulatta* (Macaco rhesus)")
+    with col4_3:
+        st.markdown("**Altre Classi (casi emblematici):**\n* **Coralli:** *Scleractinia spp.* (Madrepore)\n* **Molluschi:** *Strombus gigas* (Strombo gigante)\n* **Uccelli:** *Pavo cristatus* (Pavone indiano)")
+
+    st.markdown("---")
+
+    # EPILOGO
+    st.subheader("📚 Fonti e Metodologia")
+    st.markdown("""
+    * **La Banca Dati CITES:** I dati utilizzati provengono dal **CITES Trade Database**, gestito dallo UNEP-WCMC (UN Environment Programme World Conservation Monitoring Centre). È il registro ufficiale globale di tutte le transazioni commerciali, le esportazioni autorizzate e i sequestri doganali di fauna e flora selvatiche minacciate.
+    * **Analisi sull'enforcement:** I riferimenti sulle dinamiche di ispezione doganale e sull'uso improprio della documentazione CITES fanno riferimento ai report di ricerca della rete **TRAFFIC**.
+    * **Periodo di riferimento:** 2013–2023.
+    * Puoi esplorare e scaricare i dati grezzi direttamente sul sito ufficiale: [CITES Trade Database](https://trade.cites.org/).
+    """)
+
+except Exception as e:
+    st.error(f"Errore nel caricamento dei dati: {e}")
