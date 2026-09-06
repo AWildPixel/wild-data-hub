@@ -50,7 +50,7 @@ try:
 
     colorbar_orizzontale = dict(
         orientation="h",
-        y=-0.15,
+        y=-0.25,
         thickness=12,
         len=0.8,
         title=dict(text="Volume registrazioni", side="top")
@@ -80,7 +80,7 @@ try:
             showland=True, landcolor='#E5E5E5',
             projection_type='natural earth'
         ),
-        margin=dict(l=0, r=0, t=10, b=10)
+        margin=dict(l=0, r=0, t=10, b=40)
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -125,7 +125,7 @@ try:
 
     # ATTO 4
     st.subheader("🧬 Identikit delle specie coinvolte")
-    st.write("Le registrazioni CITES ci permettono di scendere fino alla singola specie. I **rettili** costituiscono il gruppo di gran lunga più rappresentato e frequente nelle confisce doganali italiane, affiancati da alcuni casi emblematici relativi ad altre classi animali:")
+    st.write("Le registrazioni CITES ci permettono di scendere fino alla singola specie. I **rettili** costituiscono il gruppo di gran lunga più rappresentato e frequente nelle confisce doganali italiane, affiancati da alcuni casi emblematici relativi ad altre classi animali evidenziate in mappa:")
     
     col4_1, col4_2, col4_3 = st.columns(3)
     with col4_1:
@@ -133,7 +133,7 @@ try:
     with col4_2:
         st.markdown("**Mammiferi (Mammalia - casi emblematici):**\n* *Vicugna vicugna* (Vigogna)\n* *Loxodonta africana* (Elefante africano)\n* *Macaca mulatta* (Macaco rhesus)")
     with col4_3:
-        st.markdown("**Altre Classi (casi emblematici):**\n* **Coralli:** *Scleractinia spp.* (Madrepore)\n* **Molluschi:** *Strombus gigas* (Strombo gigante)\n* **Uccelli:** *Pavo cristatus* (Pavone indiano)")
+        st.markdown("**Altre Classi (casi emblematici):**\n* **Coralli (Anthozoa):** *Scleractinia spp.* (Madrepore)\n* **Molluschi (Bivalvia/Gastropoda):** *Strombus gigas* (Strombo gigante)\n* **Uccelli (Aves):** *Pavo cristatus* (Pavone indiano)")
 
     st.markdown("---")
 
