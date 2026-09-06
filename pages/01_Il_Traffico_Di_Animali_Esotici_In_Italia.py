@@ -5,11 +5,15 @@ import streamlit as st
 import warnings
 warnings.filterwarnings('ignore')
 
-st.set_page_config(page_title="Wild Data #01 - Sequestri CITES", layout="wide")
+st.set_page_config(page_title="Wild Data - Traffico di animali in Italia", layout="wide")
 
-# TITOLO PRINCIPALE
-st.title("Wild Data 🐾 | #01 - Sequestri CITES Italia")
-st.markdown("*Esplora le rotte dell'importazione di specie esotiche verso l'Italia. Passa dal mercato legale ai sequestri doganali per scoprire i veri protagonisti del traffico di fauna selvatica.*")
+# BOTTONE HOME MOBILE-FRIENDLY IN CIMA
+st.page_link("app.py", label="🏠 Torna alla Home di Wild Data")
+st.markdown("---")
+
+# TITOLO GIORNALISTICO E SPECIFICO PER IL PUBBLICO
+st.title("🐾 Il traffico di animali esotici in Italia")
+st.markdown("*Esplora le rotte dell'importazione di specie protette verso il nostro Paese. Passa dal mercato legale ai sequestri doganali per scoprire i veri protagonisti e smontare i falsi miti.*")
 st.markdown("---")
 
 @st.cache_data
