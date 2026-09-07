@@ -52,12 +52,15 @@ try:
     # COSTRUZIONE MAPPA
     fig = go.Figure()
 
-    # Legenda riavvicinata (y=-0.05) per ottimizzazione mobile
+    # Legenda ancorata al centro e spinta verso il basso
     colorbar_orizzontale = dict(
         orientation="h",
+        yanchor="top",
         y=-0.05,
+        xanchor="center",
+        x=0.5,
         thickness=12,
-        len=0.85,
+        len=0.7,
         title=dict(text="Volume registrazioni", side="top")
     )
 
@@ -78,7 +81,7 @@ try:
             marker_line_color='#4A4A4A', marker_line_width=0.5
         ))
 
-    # Margine b impostato a 0 per azzerare lo spazio vuoto in basso su mobile
+    # Ripristiniamo il margine inferiore (b=60) per fare spazio alla legenda senza sovrapposizioni
     fig.update_layout(
         geo=dict(
             showframe=False, 
@@ -86,7 +89,7 @@ try:
             showland=True, landcolor='#E5E5E5',
             projection_type='natural earth'
         ),
-        margin=dict(l=0, r=0, t=10, b=0)
+        margin=dict(l=0, r=0, t=10, b=60)
     )
 
     st.plotly_chart(fig, use_container_width=True)
