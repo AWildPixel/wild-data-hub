@@ -1,50 +1,47 @@
-import streamlit as st
 import base64
+import streamlit as st
 
-# Impostiamo il layout a schermo largo
 st.set_page_config(page_title="Wild Data 🐾 | Hub", layout="wide")
 
-# Funzione per creare l'immagine rotonda stile IG
-def render_logo(img_path):
+
+# Funzione per generare l'intestazione responsive
+def render_header(img_path):
+    encoded = ""
     try:
         with open(img_path, "rb") as image_file:
             encoded = base64.b64encode(image_file.read()).decode()
-        
-        # HTML e CSS per il tondino allineato a destra
-        html = f"""
-        <div style="display: flex; justify-content: right; padding-top: 15px;">
-            <img src="data:image/png;base64,{encoded}" 
-                 style="border-radius: 50%; width: 130px; height: 130px; object-fit: cover; border: 2px solid #f0f2f6;">
-        </div>
-        """
-        st.markdown(html, unsafe_allow_html=True)
+        img_html = f'<img src="data:image/png;base64,{encoded}" style="border-radius: 50%; width: 75px; height: 75px; object-fit: cover; border: 2px solid #f0f2f6; flex-shrink: 0;">'
     except FileNotFoundError:
-        st.write(" ") # Nasconde errori se l'immagine sta ancora caricando su GitHub
+        img_html = ""
 
-# Creiamo le due colonne
-col_main, col_logo = st.columns([3, 1])
+    html = f"""
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 10px;">
+        <div>
+            <h1 style="margin:0; padding:0; font-size: 2.2rem; line-height: 1.2;">Wild Data 🐾</h1>
+            <p style="margin: 5px 0 0 0; font-size: 1.1rem; opacity: 0.85;">Il data journalism applicato alla natura e alla conservazione.</p>
+        </div>
+        {img_html}
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
 
-with col_main:
-    st.title("Wild Data 🐾")
-    st.markdown("### Il data journalism applicato alla natura e alla conservazione.")
 
-with col_logo:
-    # Richiama la funzione usando il nome esatto del file caricato su GitHub
-    render_logo("logo.png")
-
+# Renderizza l'intestazione unica
+render_header("logo.png")
 st.markdown("---")
 
-# Sezione di benvenuto
+# Resto del codice...
 st.write("Benvenuto nell'archivio interattivo di **A Wild Pixel**.")
-st.write("Qui trasformiamo i dati scientifici e i database ufficiali in inchieste visive per comprendere meglio i fenomeni che minacciano la biodiversità globale.")
+st.write(
+    "Qui trasformiamo i dati scientifici e i database ufficiali in inchieste visive per comprendere meglio i fenomeni che minacciano la biodiversità globale."
+)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 st.subheader("🔍 Inchieste")
 
-# Pulsante per l'inchiesta
 st.page_link(
-    "pages/01_Il_Traffico_Di_Animali_Esotici_In_Italia.py", 
-    label="Scopri l'inchiesta: Il traffico di animali esotici in Italia", 
-    icon="👉"
+    "pages/01_Il_Traffico_Di_Animali_Esotici_In_Italia.py",
+    label="Scopri l'inchiesta: Il traffico di animali esotici in Italia",
+    icon="👉",
 )
