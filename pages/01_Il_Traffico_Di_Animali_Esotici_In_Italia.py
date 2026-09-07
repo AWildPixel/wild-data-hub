@@ -7,10 +7,17 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="Wild Data - Traffico di animali in Italia", layout="wide")
 
-# CSS: FORZA IL BROWSER MOBILE A PASSARE I GESTI ALLA MAPPA SENZA SCROLLARE LA PAGINA
+# CSS: FORZA IL BROWSER MOBILE A PASSARE I GESTI SOLO ALLA MAPPA, LASCIANDO LIBERI I MARGINI E LA LEGENDA
 st.markdown("""
     <style>
+    /* 1. Riabilita lo scorrimento naturale su tutto il contenitore del grafico (legenda e spazi neri) */
     [data-testid="stPlotlyChart"] {
+        touch-action: auto !important;
+    }
+    /* 2. Disabilita lo scorrimento della pagina SOLO quando il tocco avviene esattamente sui livelli della mappa */
+    .js-plotly-plot .geolayer, 
+    .js-plotly-plot .draglayer,
+    .js-plotly-plot .geo {
         touch-action: none !important;
     }
     </style>
