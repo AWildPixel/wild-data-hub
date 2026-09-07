@@ -7,8 +7,8 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="Wild Data - Traffico di animali in Italia", layout="wide")
 
-# BOTTONE HOME MOBILE-FRIENDLY IN CIMA
-st.page_link("app.py", label="🏠 Torna alla Home di Wild Data")
+# BOTTONE HOME MOBILE-FRIENDLY IN CIMA - ORA PUNTA AL FILE CORRETTO
+st.page_link("Home.py", label="🏠 Torna alla Home di Wild Data")
 st.markdown("---")
 
 # TITOLO GIORNALISTICO E SPECIFICO PER IL PUBBLICO
