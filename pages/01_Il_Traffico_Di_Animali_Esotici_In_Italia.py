@@ -7,6 +7,15 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="Wild Data - Traffico di animali in Italia", layout="wide")
 
+# CSS: FORZA IL BROWSER MOBILE A PASSARE I GESTI ALLA MAPPA SENZA SCROLLARE LA PAGINA
+st.markdown("""
+    <style>
+    [data-testid="stPlotlyChart"] {
+        touch-action: none !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # BOTTONE HOME MOBILE-FRIENDLY IN CIMA
 st.page_link("Home.py", label="🏠 Torna alla Home di Wild Data")
 st.markdown("---")
@@ -92,7 +101,16 @@ try:
         margin=dict(l=0, r=0, t=10, b=60)
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    # OUTPUT CON CONFIGURAZIONE ESPLICITA PER INTERAZIONI MOBILE/DESKTOP
+    st.plotly_chart(
+        fig, 
+        use_container_width=True, 
+        config={
+            'scrollZoom': True,         
+            'displayModeBar': True,     
+            'displaylogo': False        
+        }
+    )
     st.markdown("---")
 
     # ATTO 1
