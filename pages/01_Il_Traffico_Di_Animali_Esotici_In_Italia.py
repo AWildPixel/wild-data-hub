@@ -7,17 +7,15 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="Wild Data - Traffico di animali in Italia", layout="wide")
 
-# CSS: FORZA IL BROWSER MOBILE A PASSARE I GESTI SOLO ALLA MAPPA, LASCIANDO LIBERI I MARGINI E LA LEGENDA
+# CSS: ESTENDE L'AREA TOUCH ALL'INTERO CONTENITORE SVG
 st.markdown("""
     <style>
-    /* 1. Riabilita lo scorrimento naturale su tutto il contenitore del grafico (legenda e spazi neri) */
+    /* Il contenitore generale di Streamlit permette lo scroll (es. spazi neri) */
     [data-testid="stPlotlyChart"] {
         touch-action: auto !important;
     }
-    /* 2. Disabilita lo scorrimento della pagina SOLO quando il tocco avviene esattamente sui livelli della mappa */
-    .js-plotly-plot .geolayer, 
-    .js-plotly-plot .draglayer,
-    .js-plotly-plot .geo {
+    /* L'intera area del grafico Plotly blocca lo scroll e riceve i gesti */
+    [data-testid="stPlotlyChart"] .svg-container {
         touch-action: none !important;
     }
     </style>
@@ -97,9 +95,13 @@ try:
             marker_line_color='#4A4A4A', marker_line_width=0.5
         ))
 
-    # Ripristiniamo il margine inferiore (b=60) per fare spazio alla legenda senza sovrapposizioni
+    # Layout con uirevision per lo zoom e sfondi trasparenti per fondersi con l'app
     fig.update_layout(
+        uirevision='constant',  
+        paper_bgcolor='rgba(0,0,0,0)',  # Sfondo esterno al grafico trasparente
+        plot_bgcolor='rgba(0,0,0,0)',   # Sfondo dell'area grafico trasparente
         geo=dict(
+            bgcolor='rgba(0,0,0,0)',    # Sfondo degli oceani trasparente
             showframe=False, 
             showcoastlines=True, coastlinecolor='#4A4A4A',
             showland=True, landcolor='#E5E5E5',
