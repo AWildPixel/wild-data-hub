@@ -204,7 +204,7 @@ try:
         st.markdown("""
         Analizzando i registri doganali originali, è emersa un'importante anomalia: in quasi 3.000 spedizioni manca un'informazione fondamentale, ovvero la "Classe" o la specie esatta dell'animale. Sappiamo che c'è stato un transito o un sequestro, ma non sappiamo di che animale si tratti.
         
-        **Perché succede?** Principalmente per tre motivi: transito di prodotti ultra-lavorati (estratti, cosmetici, pillole per la medicina tradizionale in cui è impossibile risalire alla specie senza test del DNA), compilazioni doganali affrettate ("pelle di rettile" invece del taxon esatto), o raggruppamenti generici applicati spesso a coralli e piante.
+        **Perché succede?** Principalmente per tre motivi: transito di prodotti ultra-lavorati (estratti, cosmetici, pillole per la medicina tradizionale in cui è impossibile risalire alla specie senza test del DNA), compilazioni doganali affrettate ("pelle di rettile" invece del taxon esatto), o raggruppamenti generici spesso applicati ai coralli ad esempio.
         
         Per garantire la totale trasparenza e mostrarvi la reale dimensione del traffico verso l'Italia, **abbiamo scelto di non nascondere questi dati incompleti**. 
         
