@@ -59,8 +59,8 @@ def load_data():
         res = pd.merge(res, c[['iso3', 'Class']], on='iso3', how='left')
         res = res.rename(columns={'Class': 'Classe_Dominante'})
         
-        # Se un paese ha solo record senza classe, mostriamo "Sconosciuta"
-        res['Classe_Dominante'] = res['Classe_Dominante'].fillna('Sconosciuta')
+        # Se un paese ha solo record senza classe, mostriamo "Sconosciuto"
+        res['Classe_Dominante'] = res['Classe_Dominante'].fillna('Sconosciuto')
         
         return res
 
