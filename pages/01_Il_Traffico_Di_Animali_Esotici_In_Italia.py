@@ -145,9 +145,9 @@ try:
     )
     st.markdown("---")
 
-    # ATTO 1
+    # ATTO 1 (AGGIORNATO CON NUOVO INCIPIT)
     st.subheader("🔍 Oltre i numeri: l'anomalia degli Stati Uniti")
-    st.write("Perché gli USA sono il principale esportatore di spedizioni confiscate in Italia? Più che a una rete di contrabbando tradizionale, questo primato viene ricondotto dagli analisti a un mix di dinamiche commerciali, burocrazia e snodi logistici:")
+    st.write("La nostra indagine mostra che gli USA non sono soltanto il principale esportatore di spedizioni legali in Italia ma anche di quelle illegali, perché? Più che a una rete di contrabbando tradizionale, questo primato viene ricondotto dagli analisti a un mix di dinamiche commerciali, burocrazia e snodi logistici:")
     
     col1_1, col1_2, col1_3 = st.columns(3)
     with col1_1:
@@ -199,10 +199,12 @@ try:
     # EPILOGO
     st.subheader("📚 Fonti e Metodologia")
     
-    # NOTA METODOLOGICA AGGIORNATA SULL'AREA GRIGIA DEI DATI
+    # NOTA METODOLOGICA CON DETTAGLI SUL PERCHÈ MANCANO I DATI
     with st.expander("📝 Nota sui dati: l'area grigia delle specie sconosciute"):
         st.markdown("""
         Analizzando i registri doganali originali, è emersa un'importante anomalia: in quasi 3.000 spedizioni manca un'informazione fondamentale, ovvero la "Classe" o la specie esatta dell'animale. Sappiamo che c'è stato un transito o un sequestro, ma non sappiamo di che animale si tratti.
+        
+        **Perché succede?** Principalmente per tre motivi: transito di prodotti ultra-lavorati (estratti, cosmetici, pillole per la medicina tradizionale in cui è impossibile risalire alla specie senza test del DNA), compilazioni doganali affrettate ("pelle di rettile" invece del taxon esatto), o raggruppamenti generici applicati spesso a coralli e piante.
         
         Per garantire la totale trasparenza e mostrarvi la reale dimensione del traffico verso l'Italia, **abbiamo scelto di non nascondere questi dati incompleti**. 
         
