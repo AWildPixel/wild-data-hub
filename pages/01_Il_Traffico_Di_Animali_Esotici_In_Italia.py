@@ -35,15 +35,34 @@ st.markdown("---")
 @st.cache_data
 def load_data():
     df = pd.read_csv('cites.csv', low_memory=False)
-    df = df.dropna(subset=['Exporter', 'Class'])
+    # Rimuoviamo solo se manca l'esportatore, ma manteniamo i record senza Classe tassonomica
+    df = df.dropna(subset=['Exporter'])
     df['iso3'] = coco.convert(names=df['Exporter'].tolist(), to='ISO3', not_found=None)
     df = df.dropna(subset=['iso3'])
 
     def elabora(sub_df):
-        v = sub_df.groupby('iso3').size().reset_index(name='Conteggio')
-        c = sub_df.groupby(['iso3', 'Class']).size().reset_index(name='Count')
+        # 1. Conteggio totale (tutte le righe)
+        v_tot = sub_df.groupby('iso3').size().reset_index(name='Conteggio_Totale')
+        
+        # 2. Conteggio identificato (solo righe con Class)
+        df_id = sub_df.dropna(subset=['Class'])
+        v_id = df_id.groupby('iso3').size().reset_index(name='Conteggio_Identificato')
+        
+        # 3. Classe dominante (calcolata solo sui dati identificati)
+        c = df_id.groupby(['iso3', 'Class']).size().reset_index(name='Count')
         c = c.sort_values(['iso3', 'Count'], ascending=[True, False]).drop_duplicates(subset=['iso3'])
-        return pd.merge(v, c[['iso3', 'Class']], on='iso3').rename(columns={'Class': 'Classe_Dominante'})
+        
+        # Unione dei dataframe
+        res = pd.merge(v_tot, v_id, on='iso3', how='left')
+        res['Conteggio_Identificato'] = res['Conteggio_Identificato'].fillna(0).astype(int)
+        
+        res = pd.merge(res, c[['iso3', 'Class']], on='iso3', how='left')
+        res = res.rename(columns={'Class': 'Classe_Dominante'})
+        
+        # Se un paese ha solo record senza classe, mostriamo "Sconosciuta"
+        res['Classe_Dominante'] = res['Classe_Dominante'].fillna('Sconosciuta')
+        
+        return res
 
     return elabora(df[df['Source'] != 'I']), elabora(df[df['Source'] == 'I'])
 
@@ -77,21 +96,27 @@ try:
         x=0.5,
         thickness=12,
         len=0.7,
-        title=dict(text="Volume registrazioni", side="top")
+        title=dict(text="Totale Spedizioni", side="top")
     )
 
     if scelta == "🌿 Mercato Legale":
         fig.add_trace(go.Choropleth(
-            locations=df_legale['iso3'], z=df_legale['Conteggio'], text=df_legale['Classe_Dominante'],
-            hovertemplate="<b>%{location}</b><br>Importazioni: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
+            locations=df_legale['iso3'], 
+            z=df_legale['Conteggio_Totale'], 
+            customdata=df_legale['Conteggio_Identificato'],
+            text=df_legale['Classe_Dominante'],
+            hovertemplate="<b>%{location}</b><br>Totale spedizioni: %{z}<br>Di cui identificate: %{customdata}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Greens', name='Legale',
             colorbar=colorbar_orizzontale,
             marker_line_color='#4A4A4A', marker_line_width=0.5
         ))
     else:
         fig.add_trace(go.Choropleth(
-            locations=df_illegale['iso3'], z=df_illegale['Conteggio'], text=df_illegale['Classe_Dominante'],
-            hovertemplate="<b>%{location}</b><br>Sequestri: %{z}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
+            locations=df_illegale['iso3'], 
+            z=df_illegale['Conteggio_Totale'], 
+            customdata=df_illegale['Conteggio_Identificato'],
+            text=df_illegale['Classe_Dominante'],
+            hovertemplate="<b>%{location}</b><br>Totale sequestri: %{z}<br>Di cui identificati: %{customdata}<br>Gruppo prevalente: <b>%{text}</b><extra></extra>",
             colorscale='Reds', name='Sequestri',
             colorbar=colorbar_orizzontale,
             marker_line_color='#4A4A4A', marker_line_width=0.5
@@ -174,14 +199,14 @@ try:
     # EPILOGO
     st.subheader("📚 Fonti e Metodologia")
     
-    # NUOVA NOTA METODOLOGICA PER IL PUBBLICO GENERALISTA
-    with st.expander("📝 Nota sui dati: gli animali 'senza identità'"):
+    # NOTA METODOLOGICA AGGIORNATA SULL'AREA GRIGIA DEI DATI
+    with st.expander("📝 Nota sui dati: l'area grigia delle specie sconosciute"):
         st.markdown("""
-        Nel controllare i registri doganali originali (che per l'Italia contavano oltre 15.800 spedizioni), abbiamo notato che in molti casi mancava un'informazione fondamentale: la specie o la "Classe" dell'animale. 
+        Analizzando i registri doganali originali, è emersa un'importante anomalia: in quasi 3.000 spedizioni manca un'informazione fondamentale, ovvero la "Classe" o la specie esatta dell'animale. Sappiamo che c'è stato un transito o un sequestro, ma non sappiamo di che animale si tratti.
         
-        Abbiamo quindi deciso di **escludere questi dati incompleti** (circa 3.000 spedizioni dal mercato legale e 4 dai sequestri). Non è un errore, ma una necessità visiva e divulgativa: senza sapere se si tratta di un rettile, di un uccello o di un corallo, non avremmo potuto raggruppare i dati e colorare la mappa per mostrarvi il gruppo prevalente.
+        Per garantire la totale trasparenza e mostrarvi la reale dimensione del traffico verso l'Italia, **abbiamo scelto di non nascondere questi dati incompleti**. 
         
-        Questa scelta di totale trasparenza sposta inevitabilmente alcuni equilibri nei numeri assoluti: se avessimo contato anche gli "sconosciuti", ad esempio, gli Stati Uniti sarebbero risultati i primi esportatori anche nel mercato legale (mentre nei nostri dati puliti scendono al terzo posto, dietro Svizzera e Indonesia).
+        Ecco perché, passando il cursore sui vari Paesi nella mappa, noterete un doppio conteggio: il volume totale delle spedizioni (che include l'area grigia dei registri incompleti) e il numero esatto delle spedizioni in cui l'animale è stato correttamente identificato. Questa scelta ci permette di mantenere la precisione sulla classe dominante per ogni nazione, senza però sminuire i numeri reali del mercato legale (15.750 registrazioni) e dei sequestri ufficiali (61 casi).
         """)
         
     st.markdown("""
