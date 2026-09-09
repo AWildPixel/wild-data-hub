@@ -173,6 +173,17 @@ try:
 
     # EPILOGO
     st.subheader("📚 Fonti e Metodologia")
+    
+    # NUOVA NOTA METODOLOGICA PER IL PUBBLICO GENERALISTA
+    with st.expander("📝 Nota sui dati: gli animali 'senza identità'"):
+        st.markdown("""
+        Nel controllare i registri doganali originali (che per l'Italia contavano oltre 15.800 spedizioni), abbiamo notato che in molti casi mancava un'informazione fondamentale: la specie o la "Classe" dell'animale. 
+        
+        Abbiamo quindi deciso di **escludere questi dati incompleti** (circa 3.000 spedizioni dal mercato legale e 4 dai sequestri). Non è un errore, ma una necessità visiva e divulgativa: senza sapere se si tratta di un rettile, di un uccello o di un corallo, non avremmo potuto raggruppare i dati e colorare la mappa per mostrarvi il gruppo prevalente.
+        
+        Questa scelta di totale trasparenza sposta inevitabilmente alcuni equilibri nei numeri assoluti: se avessimo contato anche gli "sconosciuti", ad esempio, gli Stati Uniti sarebbero risultati i primi esportatori anche nel mercato legale (mentre nei nostri dati puliti scendono al terzo posto, dietro Svizzera e Indonesia).
+        """)
+        
     st.markdown("""
     * **La Banca Dati CITES:** I dati utilizzati provengono dal **CITES Trade Database**, gestito dallo UNEP-WCMC (UN Environment Programme World Conservation Monitoring Centre). È il registro ufficiale globale di tutte le transazioni commerciali, le esportazioni autorizzate e i sequestri doganali di fauna e flora selvatiche minacciate.
     * **Analisi sull'enforcement:** I riferimenti sulle dinamiche di ispezione doganale e sull'uso improprio della documentazione CITES fanno riferimento ai report di ricerca della rete **TRAFFIC**.
