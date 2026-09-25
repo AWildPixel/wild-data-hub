@@ -211,7 +211,7 @@ with col1_right:
                     text=f"<b>{accent_val}</b>",
                     x=0.5,
                     y=0.5,
-                    font=dict(size=22),  # <-- FIX APPLICATO QUI
+                    font=dict(size=22),
                     showarrow=False,
                 )
             ],
@@ -281,7 +281,7 @@ with col2_left:
         geo=dict(
             scope="europe",
             center=dict(lat=42.5, lon=12.0),
-            projection=dict(scale=5.8),  # <-- FIX APPLICATO QUI
+            projection=dict(scale=5.8),
             showland=True,
             landcolor="#E5E5E5",
             showcountries=True,
@@ -310,34 +310,42 @@ with col2_right:
 
     html_pictogram = clean_html("""
         <div class="pictogram-container">
+            <!-- COLONNA 1: HOTSPOT (POCHE AZIENDE, TANTI DANNI) -->
             <div class="picto-col">
-                <div class="picto-label" style="color: #D32F2F;">Gli "Hotspot"</div>
+                <div class="picto-label" style="color: #D32F2F; margin-bottom: 10px;">Gli "Hotspot"</div>
+                
+                <!-- DANNO (Sopra) -->
                 <div style="height: 120px; display: flex; align-items: flex-end;">
+                    <svg width="79" height="79" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.82 7,18.47V22H9V20H11V22H13V20H15V22H17V18.46C19.47,16.81 21,14 21,11A9,9 0 0,0 12,2M8,11A2,2 0 0,1 10,13A2,2 0 0,1 8,15A2,2 0 0,1 6,13A2,2 0 0,1 8,11M16,11A2,2 0 0,1 18,13A2,2 0 0,1 16,15A2,2 0 0,1 14,13A2,2 0 0,1 16,11M12,14L13.5,17H10.5L12,14Z" /></svg>
+                </div>
+                <div class="picto-label" style="color: #D32F2F;">62,2%</div>
+                <div class="picto-sub">dei bovini predati totali</div>
+                
+                <!-- AZIENDA (Sotto) -->
+                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
                     <svg width="45" height="45" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
                 </div>
                 <div class="picto-label">20,5%</div>
                 <div class="picto-sub">delle aziende colpite</div>
-                
-                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
-                    <svg width="79" height="79" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
-                </div>
-                <div class="picto-label" style="color: #D32F2F;">62,2%</div>
-                <div class="picto-sub">dei bovini predati totali</div>
             </div>
             
+            <!-- COLONNA 2: TUTTE LE ALTRE (TANTE AZIENDE, POCHI DANNI) -->
             <div class="picto-col">
-                <div class="picto-label" style="color: #666;">Tutte le altre</div>
+                <div class="picto-label" style="color: #666; margin-bottom: 10px;">Tutte le altre</div>
+                
+                <!-- DANNO (Sopra) -->
                 <div style="height: 120px; display: flex; align-items: flex-end;">
+                    <svg width="61" height="61" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.82 7,18.47V22H9V20H11V22H13V20H15V22H17V18.46C19.47,16.81 21,14 21,11A9,9 0 0,0 12,2M8,11A2,2 0 0,1 10,13A2,2 0 0,1 8,15A2,2 0 0,1 6,13A2,2 0 0,1 8,11M16,11A2,2 0 0,1 18,13A2,2 0 0,1 16,15A2,2 0 0,1 14,13A2,2 0 0,1 16,11M12,14L13.5,17H10.5L12,14Z" /></svg>
+                </div>
+                <div class="picto-label" style="color: #D32F2F;">37,8%</div>
+                <div class="picto-sub">dei bovini predati totali</div>
+                
+                <!-- AZIENDA (Sotto) -->
+                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
                     <svg width="89" height="89" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
                 </div>
                 <div class="picto-label">79,5%</div>
                 <div class="picto-sub">delle aziende colpite</div>
-                
-                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
-                    <svg width="61" height="61" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
-                </div>
-                <div class="picto-label" style="color: #D32F2F;">37,8%</div>
-                <div class="picto-sub">dei bovini predati totali</div>
             </div>
         </div>
     """)
