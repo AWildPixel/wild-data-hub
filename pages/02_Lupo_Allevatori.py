@@ -1,9 +1,14 @@
 import math
-import textwrap
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
+
+# Funzione helper per impedire a Markdown di creare blocchi di codice
+def clean_html(html_str: str) -> str:
+    return "\n".join(line.strip() for line in html_str.splitlines())
+
 
 # --- CONFIGURAZIONE PAGINA ---
 st.set_page_config(
@@ -14,7 +19,7 @@ st.set_page_config(
 
 # --- CSS PER OPTIMIZATION MOBILE & SCROLL MAPPE E COMPONENTI CUSTOM ---
 st.markdown(
-    textwrap.dedent("""
+    clean_html("""
     <style>
     /* 1. Riabilita lo scorrimento naturale su tutto il contenitore del grafico */
     [data-testid="stPlotlyChart"] {
@@ -141,15 +146,15 @@ st.write(
 col1_left, col1_right = st.columns([1, 1])
 
 with col1_left:
-  st.markdown("#### 📈 Un ritorno storico")
-  st.write(
-      "Oggi l'Italia ospita una popolazione stimata di circa **3.501 lupi**"
-      " (monitoraggio nazionale ISPRA 2020-2021). Si tratta di un indiscutibile"
-      " successo di conservazione se si guarda al punto di partenza:"
-  )
+    st.markdown("#### 📈 Un ritorno storico")
+    st.write(
+        "Oggi l'Italia ospita una popolazione stimata di circa **3.501 lupi**"
+        " (monitoraggio nazionale ISPRA 2020-2021). Si tratta di un indiscutibile"
+        " successo di conservazione se si guarda al punto di partenza:"
+    )
 
-  st.markdown(
-      textwrap.dedent("""
+    st.markdown(
+        clean_html("""
         <div style="display: flex; gap: 15px; margin-top: 20px;">
             <div class="kpi-card kpi-card-neutral" style="flex: 1;">
                 <p class="kpi-val kpi-val-neutral">~100</p>
@@ -161,84 +166,82 @@ with col1_left:
             </div>
         </div>
     """),
-      unsafe_allow_html=True,
-  )
+        unsafe_allow_html=True,
+    )
 
-  st.markdown("#### 🌪️ Il vero peso sui bilanci: il clima")
-  st.write(
-      "Per dare una proporzione reale all'allarme economico: i danni diretti"
-      " da predazione valgono circa **1,8 milioni di euro all'anno** a livello"
-      " nazionale (report ISPRA). Nello stesso momento (estate 2026),"
-      " Coldiretti ha stimato in **oltre 3 miliardi di euro** i danni subiti da"
-      " agricoltura e zootecnia a causa di siccità e caldo estremo, con crolli"
-      " nella produzione di foraggi e latte. Un conto che sale a 20 miliardi in"
-      " quattro anni. Un rischio strutturale ben diverso."
-  )
+    st.markdown("#### 🌪️ Il vero peso sui bilanci: il clima")
+    st.write(
+        "Per dare una proporzione reale all'allarme economico: i danni diretti"
+        " da predazione valgono circa **1,8 milioni di euro all'anno** a livello"
+        " nazionale (report ISPRA). Nello stesso momento (estate 2026),"
+        " Coldiretti ha stimato in **oltre 3 miliardi di euro** i danni subiti da"
+        " agricoltura e zootecnia a causa di siccità e caldo estremo, con crolli"
+        " nella produzione di foraggi e latte. Un conto che sale a 20 miliardi in"
+        " quattro anni. Un rischio strutturale ben diverso."
+    )
 
 with col1_right:
-  st.markdown("#### 📊 Quota di Aziende Colpite ogni anno")
-  st.write(
-      "In termini assoluti, la percentuale di aziende zootecniche che subisce"
-      " predazioni ogni anno è marginale rispetto al totale nazionale dei capi"
-      " e delle stalle iscritte:"
-  )
-
-  def make_donut(df, title, accent_val):
-    fig = px.pie(
-        df,
-        values="Valore",
-        names="Stato",
-        hole=0.7,
-        color="Stato",
-        color_discrete_map={
-            "Aziende Colpite": COLOR_ACCENT,
-            "Non Colpite": COLOR_NEUTRAL,
-        },
-    )
-    fig.update_layout(
-        title={"text": title, "x": 0.5, "xanchor": "center"},
-        showlegend=False,
-        margin=dict(t=35, b=10, l=10, r=10),
-        height=220,
-        dragmode=False,
-        annotations=[
-            dict(
-                text=f"<b>{accent_val}</b>",
-                x=0.5,
-                y=0.5,
-                font_size=22,
-                showarrow=False,
-            )
-        ],
-        paper_bgcolor=COLOR_BG,
-    )
-    return fig
-
-  col_d1, col_d2 = st.columns(2)
-  with col_d1:
-    st.plotly_chart(
-        make_donut(impatto_bovini, "1 azienda bovina su 300 colpita", "0,33%"),
-        use_container_width=True,
-        config={"displayModeBar": False, "scrollZoom": False},
-    )
-  with col_d2:
-    st.plotly_chart(
-        make_donut(
-            impatto_ovicaprini, "1 azienda ovicaprina su 140", "0,70%"
-        ),
-        use_container_width=True,
-        config={"displayModeBar": False, "scrollZoom": False},
+    st.markdown("#### 📊 Quota di Aziende Colpite ogni anno")
+    st.write(
+        "In termini assoluti, la percentuale di aziende zootecniche che subisce"
+        " predazioni ogni anno è marginale rispetto al totale nazionale dei capi"
+        " e delle stalle iscritte:"
     )
 
-  st.markdown("#### 🐕 L'ombra dei cani vaganti")
-  st.write(
-      "C'è un ultimo dettaglio che ridimensiona ulteriormente il quadro. In"
-      " quasi metà delle Regioni italiane, il veterinario ASL accerta la causa"
-      " di morte del bestiame solo visivamente, senza esami del DNA su morsi o"
-      " saliva. Questo significa che sotto la voce ufficiale 'danno da lupo'"
-      " finisce anche una quota non quantificabile di attacchi da parte di **cani"
-      " vaganti o inselvatichiti**, rendendo i numeri reali ancora più contenuti."
-  )
+    def make_donut(df, title, accent_val):
+        fig = px.pie(
+            df,
+            values="Valore",
+            names="Stato",
+            hole=0.7,
+            color="Stato",
+            color_discrete_map={
+                "Aziende Colpite": COLOR_ACCENT,
+                "Non Colpite": COLOR_NEUTRAL,
+            },
+        )
+        fig.update_layout(
+            title={"text": title, "x": 0.5, "xanchor": "center"},
+            showlegend=False,
+            margin=dict(t=35, b=10, l=10, r=10),
+            height=220,
+            dragmode=False,
+            annotations=[
+                dict(
+                    text=f"<b>{accent_val}</b>",
+                    x=0.5,
+                    y=0.5,
+                    font=dict(size=22),  # <-- FIX APPLICATO QUI
+                    showarrow=False,
+                )
+            ],
+            paper_bgcolor=COLOR_BG,
+        )
+        return fig
+
+    col_d1, col_d2 = st.columns(2)
+    with col_d1:
+        st.plotly_chart(
+            make_donut(impatto_bovini, "1 azienda bovina su 300 colpita", "0,33%"),
+            use_container_width=True,
+            config={"displayModeBar": False, "scrollZoom": False},
+        )
+    with col_d2:
+        st.plotly_chart(
+            make_donut(impatto_ovicaprini, "1 azienda ovicaprina su 140", "0,70%"),
+            use_container_width=True,
+            config={"displayModeBar": False, "scrollZoom": False},
+        )
+
+    st.markdown("#### 🐕 L'ombra dei cani vaganti")
+    st.write(
+        "C'è un ultimo dettaglio che ridimensiona ulteriormente il quadro. In"
+        " quasi metà delle Regioni italiane, il veterinario ASL accerta la causa"
+        " di morte del bestiame solo visivamente, senza esami del DNA su morsi o"
+        " saliva. Questo significa che sotto la voce ufficiale 'danno da lupo'"
+        " finisce anche una quota non quantificabile di attacchi da parte di **cani"
+        " vaganti o inselvatichiti**, rendendo i numeri reali ancora più contenuti."
+    )
 
 st.markdown("---")
 
@@ -254,58 +257,58 @@ st.write(
 col2_left, col2_right = st.columns([1, 1])
 
 with col2_left:
-  st.markdown("#### 📍 Il lupo è tornato, ma non ovunque allo stesso modo")
-  sizes = [math.sqrt(val) * 1.5 for val in data_popolazione["Lupi"]]
+    st.markdown("#### 📍 Il lupo è tornato, ma non ovunque allo stesso modo")
+    sizes = [math.sqrt(val) * 1.5 for val in data_popolazione["Lupi"]]
 
-  fig_map = go.Figure()
-  fig_map.add_trace(
-      go.Scattergeo(
-          lon=data_popolazione["Lon"],
-          lat=data_popolazione["Lat"],
-          text=["Alpi: 952 lupi", "Appennino: 2.388 lupi"],
-          mode="markers+text",
-          textposition=["top center", "bottom center"],
-          marker=dict(
-              size=sizes,
-              color=COLOR_ACCENT,
-              opacity=0.8,
-              line=dict(width=1, color="#4A4A4A"),
-          ),
-          hovertemplate="<b>%{text}</b><extra></extra>",
-      )
-  )
-  fig_map.update_layout(
-      geo=dict(
-          scope="europe",
-          center=dict(lat=42.5, lon=12.0),
-          projection_scale=5.8,
-          showland=True,
-          landcolor="#E5E5E5",
-          showcountries=True,
-          countrycolor="#FFFFFF",
-          showcoastlines=True,
-          coastlinecolor="#B0B0B0",
-      ),
-      margin=dict(l=0, r=0, t=10, b=10),
-      height=320,
-      paper_bgcolor=COLOR_BG,
-      plot_bgcolor=COLOR_BG,
-  )
-  st.plotly_chart(fig_map, use_container_width=True)
+    fig_map = go.Figure()
+    fig_map.add_trace(
+        go.Scattergeo(
+            lon=data_popolazione["Lon"],
+            lat=data_popolazione["Lat"],
+            text=["Alpi: 952 lupi", "Appennino: 2.388 lupi"],
+            mode="markers+text",
+            textposition=["top center", "bottom center"],
+            marker=dict(
+                size=sizes,
+                color=COLOR_ACCENT,
+                opacity=0.8,
+                line=dict(width=1, color="#4A4A4A"),
+            ),
+            hovertemplate="<b>%{text}</b><extra></extra>",
+        )
+    )
+    fig_map.update_layout(
+        geo=dict(
+            scope="europe",
+            center=dict(lat=42.5, lon=12.0),
+            projection=dict(scale=5.8),  # <-- FIX APPLICATO QUI
+            showland=True,
+            landcolor="#E5E5E5",
+            showcountries=True,
+            countrycolor="#FFFFFF",
+            showcoastlines=True,
+            coastlinecolor="#B0B0B0",
+        ),
+        margin=dict(l=0, r=0, t=10, b=10),
+        height=320,
+        paper_bgcolor=COLOR_BG,
+        plot_bgcolor=COLOR_BG,
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
 
-  st.write(
-      "Gli hotspot dei danni si concentrano lungo la dorsale appenninica"
-      " centrale, in alcune aree del Sud e, per le pecore, nel nord-ovest"
-      " alpino. Questa mappa del conflitto non è una 'scelta' del lupo: è la"
-      " semplice **sovrapposizione geografica** tra le aree ad alta densità di"
-      " lupi e le zone in cui si concentra la maggior parte degli allevamenti a"
-      " pascolo estensivo in Italia."
-  )
+    st.write(
+        "Gli hotspot dei danni si concentrano lungo la dorsale appenninica"
+        " centrale, in alcune aree del Sud e, per le pecore, nel nord-ovest"
+        " alpino. Questa mappa del conflitto non è una 'scelta' del lupo: è la"
+        " semplice **sovrapposizione geografica** tra le aree ad alta densità di"
+        " lupi e le zone in cui si concentra la maggior parte degli allevamenti a"
+        " pascolo estensivo in Italia."
+    )
 
 with col2_right:
-  st.markdown("#### 🎯 1 azienda su 5 subisce oltre il 60% dei danni")
+    st.markdown("#### 🎯 1 azienda su 5 subisce oltre il 60% dei danni")
 
-  html_pictogram = textwrap.dedent("""
+    html_pictogram = clean_html("""
         <div class="pictogram-container">
             <div class="picto-col">
                 <div class="picto-label" style="color: #D32F2F;">Gli "Hotspot"</div>
@@ -338,12 +341,12 @@ with col2_right:
             </div>
         </div>
     """)
-  st.markdown(html_pictogram, unsafe_allow_html=True)
-  st.caption(
-      "*Dati di concentrazione del danno per la filiera bovina. Il rapporto è"
-      " ancora più estremo per il settore ovicaprino (il 25,9% delle stalle"
-      " subisce il 73,3% dei danni).*"
-  )
+    st.markdown(html_pictogram, unsafe_allow_html=True)
+    st.caption(
+        "*Dati di concentrazione del danno per la filiera bovina. Il rapporto è"
+        " ancora più estremo per il settore ovicaprino (il 25,9% delle stalle"
+        " subisce il 73,3% dei danni).*"
+    )
 
 st.markdown("---")
 
@@ -359,33 +362,33 @@ st.write(
 col3_left, col3_right = st.columns([1, 1])
 
 with col3_left:
-  st.markdown("#### ⏳ Tempi di indennizzo estenuanti")
-  st.markdown(
-      textwrap.dedent("""
+    st.markdown("#### ⏳ Tempi di indennizzo estenuanti")
+    st.markdown(
+        clean_html("""
         <div class="kpi-card">
             <p class="kpi-val" style="font-size:3rem;">80,4%</p>
             <p class="kpi-label" style="font-size:1.1rem;">Degli allevatori colpiti aspetta <b>da 2 a oltre 12 mesi</b> per ricevere l'indennizzo di un capo ucciso.</p>
         </div>
     """),
-      unsafe_allow_html=True,
-  )
-  st.write(
-      "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito"
-      " per una piccola azienda che nel frattempo ha perso capitale produttivo"
-      " e continua a sostenere le spese vive quotidiane."
-  )
+        unsafe_allow_html=True,
+    )
+    st.write(
+        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito"
+        " per una piccola azienda che nel frattempo ha perso capitale produttivo"
+        " e continua a sostenere le spese vive quotidiane."
+    )
 
 with col3_right:
-  st.markdown("#### 🛡️ L'emergenza della raccolta dati sulle difese")
-  st.write(
-      "Come siamo messi a prevenzione sul campo? Analizzando i report"
-      " ufficiali nei luoghi degli attacchi accertati, emerge un quadro"
-      " disarmante non solo sulla mancanza di difese, ma sulla stessa"
-      " capacità delle Regioni di tracciarle:"
-  )
+    st.markdown("#### 🛡️ L'emergenza della raccolta dati sulle difese")
+    st.write(
+        "Come siamo messi a prevenzione sul campo? Analizzando i report"
+        " ufficiali nei luoghi degli attacchi accertati, emerge un quadro"
+        " disarmante non solo sulla mancanza di difese, ma sulla stessa"
+        " capacità delle Regioni di tracciarle:"
+    )
 
-  st.markdown(
-      textwrap.dedent("""
+    st.markdown(
+        clean_html("""
         <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
             <p class="kpi-val" style="font-size:1.6rem; color:#555555;">8,9%</p>
             <p class="kpi-label" style="margin-top:2px;">Casi accertati con presenza di <b>cani da guardiania</b>.</p>
@@ -403,14 +406,14 @@ with col3_right:
             <p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno semplicemente registrato l'informazione.</p>
         </div>
     """),
-      unsafe_allow_html=True,
-  )
+        unsafe_allow_html=True,
+    )
 
-  st.write(
-      "E quando le Regioni stanziano fondi per finanziare cani e recinzioni, gli"
-      " importi ordinari sono storicamente esigui — un problema che"
-      " affronteremo più avanti."
-  )
+    st.write(
+        "E quando le Regioni stanziano fondi per finanziare cani e recinzioni, gli"
+        " importi ordinari sono storicamente esigui — un problema che"
+        " affronteremo più avanti."
+    )
 
 st.markdown("---")
 
@@ -431,7 +434,7 @@ st.write(
 )
 
 st.markdown(
-    textwrap.dedent("""
+    clean_html("""
     <div class="kpi-card" style="text-align: center; padding: 30px;">
         <p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
         <p class="kpi-label" style="font-size:1.3rem;"><b>Aziende bovine scomparse in soli 5 anni (2015-2019)</b></p>
@@ -447,7 +450,7 @@ st.markdown("---")
 st.subheader("5. Oltre la caccia: cosa serve davvero")
 
 st.markdown(
-    textwrap.dedent("""
+    clean_html("""
     <div class="ethical-callout">
         <b>Prima ancora dei numeri, per noi vale un principio semplice:</b> il lupo è una specie protetta e ha lo stesso diritto di esistere nel nostro ecosistema. Sterminarlo perché è la scorciatoia più comoda, invece di affrontare le vere cause del conflitto, non è una soluzione — è solo il modo più rapido per evitare di risolvere il problema.
     </div>
@@ -465,47 +468,47 @@ st.write(
 col5_left, col5_right = st.columns([1, 1])
 
 with col5_left:
-  st.markdown("#### 💰 Il sostegno economico reale")
-  st.write(
-      "I bandi frammentari non bastano. Serve garantire fondi certi non solo"
-      " per le recinzioni, ma per coprire stabilmente i costosi **mantenimenti"
-      " dei cani da guardiania** e il lavoro extra degli allevatori. Il caso"
-      " dell'Emilia-Romagna traccia un modello per il futuro:"
-  )
+    st.markdown("#### 💰 Il sostegno economico reale")
+    st.write(
+        "I bandi frammentari non bastano. Serve garantire fondi certi non solo"
+        " per le recinzioni, ma per coprire stabilmente i costosi **mantenimenti"
+        " dei cani da guardiania** e il lavoro extra degli allevatori. Il caso"
+        " dell'Emilia-Romagna traccia un modello per il futuro:"
+    )
 
-  st.markdown(
-      textwrap.dedent("""
+    st.markdown(
+        clean_html("""
         <div class="kpi-card" style="margin-top: 15px;">
             <p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
             <p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
             <p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
         </div>
     """),
-      unsafe_allow_html=True,
-  )
+        unsafe_allow_html=True,
+    )
 
 with col5_right:
-  st.markdown("#### 🔬 Studiare gli 'Hotspot' (e raccogliere i dati)")
-  st.write(
-      "Non si può gestire ciò che non si conosce. Quel buco nero del"
-      " **58,1%** di attacchi senza dati sulle recinzioni è l'esempio plastico"
-      " di come le istituzioni debbano investire prima di tutto nel capire cosa"
-      " succede sul campo."
-  )
-  st.write(
-      "Nelle sue conclusioni, l'ISPRA ammette esplicitamente la necessità di"
-      " fare luce su queste dinamiche:"
-  )
+    st.markdown("#### 🔬 Studiare gli 'Hotspot' (e raccogliere i dati)")
+    st.write(
+        "Non si può gestire ciò che non si conosce. Quel buco nero del"
+        " **58,1%** di attacchi senza dati sulle recinzioni è l'esempio plastico"
+        " di come le istituzioni debbano investire prima di tutto nel capire cosa"
+        " succede sul campo."
+    )
+    st.write(
+        "Nelle sue conclusioni, l'ISPRA ammette esplicitamente la necessità di"
+        " fare luce su queste dinamiche:"
+    )
 
-  st.info(
-      "📌 *«è importante individuare le caratteristiche delle aziende definite"
-      " 'croniche' per poter elaborare interventi specifici che permettano di"
-      " diminuire significativamente le perdite»*, si legge nel report ISPRA"
-      " (Gervasi et al. 2022). Finché non finanzieremo la ricerca ecologica su"
-      " questi hotspot circoscritti, qualsiasi politica di abbattimento sparerà"
-      " letteralmente nel mucchio, senza difendere i pochi pastori che portano"
-      " il vero peso economico della biodiversità."
-  )
+    st.info(
+        "📌 *«è importante individuare le caratteristiche delle aziende definite"
+        " 'croniche' per poter elaborare interventi specifici che permettano di"
+        " diminuire significativamente le perdite»*, si legge nel report ISPRA"
+        " (Gervasi et al. 2022). Finché non finanzieremo la ricerca ecologica su"
+        " questi hotspot circoscritti, qualsiasi politica di abbattimento sparerà"
+        " letteralmente nel mucchio, senza difendere i pochi pastori che portano"
+        " il vero peso economico della biodiversità."
+    )
 
 st.markdown("---")
 
@@ -513,7 +516,7 @@ st.markdown("---")
 st.subheader("📚 Fonti e Metodologia")
 
 with st.expander("📝 Nota sui dati, Caveat e Dataset"):
-  st.markdown("""
+    st.markdown("""
     **Limiti del Dataset ISPRA:**
     * I dati di impatto nazionali dettagliati sulle aziende (Gervasi et al. 2022) coprono il quinquennio **2015-2019**, rappresentando l'ultimo studio sistematico standardizzato disponibile su scala paese, basato sull'incrocio tra rimborsi regionali e Banca Dati Nazionale (BDN).
     * Non esiste una ripartizione regionale pulita per la popolazione di lupo in Appennino, poiché il modello scientifico ISPRA stima le densità su 13 macro-aree di campionamento che valicano i confini amministrativi.
