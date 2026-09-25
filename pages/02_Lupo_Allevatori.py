@@ -1,4 +1,5 @@
 import math
+import textwrap
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -13,7 +14,7 @@ st.set_page_config(
 
 # --- CSS PER OPTIMIZATION MOBILE & SCROLL MAPPE E COMPONENTI CUSTOM ---
 st.markdown(
-    """
+    textwrap.dedent("""
     <style>
     /* 1. Riabilita lo scorrimento naturale su tutto il contenitore del grafico */
     [data-testid="stPlotlyChart"] {
@@ -88,7 +89,7 @@ st.markdown(
         margin-bottom: 25px;
     }
     </style>
-""",
+"""),
     unsafe_allow_html=True,
 )
 
@@ -148,18 +149,18 @@ with col1_left:
   )
 
   st.markdown(
-      """
-    <div style="display: flex; gap: 15px; margin-top: 20px;">
-        <div class="kpi-card kpi-card-neutral" style="flex: 1;">
-            <p class="kpi-val kpi-val-neutral">~100</p>
-            <p class="kpi-label">Lupi in Italia nel 1973<br><i>(Stima Zimen & Boitani)</i></p>
+      textwrap.dedent("""
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <div class="kpi-card kpi-card-neutral" style="flex: 1;">
+                <p class="kpi-val kpi-val-neutral">~100</p>
+                <p class="kpi-label">Lupi in Italia nel 1973<br><i>(Stima Zimen & Boitani)</i></p>
+            </div>
+            <div class="kpi-card" style="flex: 1;">
+                <p class="kpi-val">3.501</p>
+                <p class="kpi-label">Lupi in Italia oggi<br><i>(Monitoraggio ISPRA)</i></p>
+            </div>
         </div>
-        <div class="kpi-card" style="flex: 1;">
-            <p class="kpi-val">3.501</p>
-            <p class="kpi-label">Lupi in Italia oggi<br><i>(Monitoraggio ISPRA)</i></p>
-        </div>
-    </div>
-    """,
+    """),
       unsafe_allow_html=True,
   )
 
@@ -199,7 +200,7 @@ with col1_right:
         showlegend=False,
         margin=dict(t=35, b=10, l=10, r=10),
         height=220,
-        dragmode=False,  # Disattiva interazioni fastidiose su mobile
+        dragmode=False,
         annotations=[
             dict(
                 text=f"<b>{accent_val}</b>",
@@ -254,7 +255,6 @@ col2_left, col2_right = st.columns([1, 1])
 
 with col2_left:
   st.markdown("#### 📍 Il lupo è tornato, ma non ovunque allo stesso modo")
-  # Calcolo proporzionale area (radice quadrata) per le bolle della mappa
   sizes = [math.sqrt(val) * 1.5 for val in data_popolazione["Lupi"]]
 
   fig_map = go.Figure()
@@ -290,9 +290,7 @@ with col2_left:
       height=320,
       paper_bgcolor=COLOR_BG,
       plot_bgcolor=COLOR_BG,
-      # Mappa resa nuovamente interattiva (rimosso dragmode=False)
   )
-  # Rimosse le restrizioni di config per ripristinare l'interattività piena della mappa
   st.plotly_chart(fig_map, use_container_width=True)
 
   st.write(
@@ -307,39 +305,39 @@ with col2_left:
 with col2_right:
   st.markdown("#### 🎯 1 azienda su 5 subisce oltre il 60% dei danni")
 
-  html_pictogram = """
-    <div class="pictogram-container">
-        <div class="picto-col">
-            <div class="picto-label" style="color: #D32F2F;">Gli "Hotspot"</div>
-            <div style="height: 120px; display: flex; align-items: flex-end;">
-                <svg width="45" height="45" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
+  html_pictogram = textwrap.dedent("""
+        <div class="pictogram-container">
+            <div class="picto-col">
+                <div class="picto-label" style="color: #D32F2F;">Gli "Hotspot"</div>
+                <div style="height: 120px; display: flex; align-items: flex-end;">
+                    <svg width="45" height="45" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
+                </div>
+                <div class="picto-label">20,5%</div>
+                <div class="picto-sub">delle aziende colpite</div>
+                
+                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
+                    <svg width="79" height="79" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+                </div>
+                <div class="picto-label" style="color: #D32F2F;">62,2%</div>
+                <div class="picto-sub">dei bovini predati totali</div>
             </div>
-            <div class="picto-label">20,5%</div>
-            <div class="picto-sub">delle aziende colpite</div>
             
-            <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
-                <svg width="79" height="79" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+            <div class="picto-col">
+                <div class="picto-label" style="color: #666;">Tutte le altre</div>
+                <div style="height: 120px; display: flex; align-items: flex-end;">
+                    <svg width="89" height="89" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
+                </div>
+                <div class="picto-label">79,5%</div>
+                <div class="picto-sub">delle aziende colpite</div>
+                
+                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
+                    <svg width="61" height="61" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+                </div>
+                <div class="picto-label" style="color: #D32F2F;">37,8%</div>
+                <div class="picto-sub">dei bovini predati totali</div>
             </div>
-            <div class="picto-label" style="color: #D32F2F;">62,2%</div>
-            <div class="picto-sub">dei bovini predati totali</div>
         </div>
-        
-        <div class="picto-col">
-            <div class="picto-label" style="color: #666;">Tutte le altre</div>
-            <div style="height: 120px; display: flex; align-items: flex-end;">
-                <svg width="89" height="89" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
-            </div>
-            <div class="picto-label">79,5%</div>
-            <div class="picto-sub">delle aziende colpite</div>
-            
-            <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
-                <svg width="61" height="61" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
-            </div>
-            <div class="picto-label" style="color: #D32F2F;">37,8%</div>
-            <div class="picto-sub">dei bovini predati totali</div>
-        </div>
-    </div>
-    """
+    """)
   st.markdown(html_pictogram, unsafe_allow_html=True)
   st.caption(
       "*Dati di concentrazione del danno per la filiera bovina. Il rapporto è"
@@ -363,12 +361,12 @@ col3_left, col3_right = st.columns([1, 1])
 with col3_left:
   st.markdown("#### ⏳ Tempi di indennizzo estenuanti")
   st.markdown(
-      """
-    <div class="kpi-card">
-        <p class="kpi-val" style="font-size:3rem;">80,4%</p>
-        <p class="kpi-label" style="font-size:1.1rem;">Degli allevatori colpiti aspetta <b>da 2 a oltre 12 mesi</b> per ricevere l'indennizzo di un capo ucciso.</p>
-    </div>
-    """,
+      textwrap.dedent("""
+        <div class="kpi-card">
+            <p class="kpi-val" style="font-size:3rem;">80,4%</p>
+            <p class="kpi-label" style="font-size:1.1rem;">Degli allevatori colpiti aspetta <b>da 2 a oltre 12 mesi</b> per ricevere l'indennizzo di un capo ucciso.</p>
+        </div>
+    """),
       unsafe_allow_html=True,
   )
   st.write(
@@ -387,28 +385,27 @@ with col3_right:
   )
 
   st.markdown(
-      """
-    <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
-        <p class="kpi-val" style="font-size:1.6rem; color:#555555;">8,9%</p>
-        <p class="kpi-label" style="margin-top:2px;">Casi accertati con presenza di <b>cani da guardiania</b>.</p>
-    </div>
-    <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
-        <p class="kpi-val" style="font-size:1.6rem; color:#555555;">11,8%</p>
-        <p class="kpi-label" style="margin-top:2px;">Casi con presenza di <b>recinzioni antipredazione</b>.</p>
-    </div>
-    <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px; border-left-color:#856404;">
-        <p class="kpi-val" style="font-size:1.6rem; color:#856404;">14,7%</p>
-        <p class="kpi-label" style="margin-top:2px;">Casi accertati con <b>nessuna misura</b> esplicita.</p>
-    </div>
-    <div class="kpi-card kpi-card-neutral" style="padding-top: 8px; padding-bottom: 8px;">
-        <p class="kpi-val kpi-val-neutral" style="font-size:1.6rem;">58,1%</p>
-        <p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno semplicemente registrato l'informazione.</p>
-    </div>
-    """,
+      textwrap.dedent("""
+        <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
+            <p class="kpi-val" style="font-size:1.6rem; color:#555555;">8,9%</p>
+            <p class="kpi-label" style="margin-top:2px;">Casi accertati con presenza di <b>cani da guardiania</b>.</p>
+        </div>
+        <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
+            <p class="kpi-val" style="font-size:1.6rem; color:#555555;">11,8%</p>
+            <p class="kpi-label" style="margin-top:2px;">Casi con presenza di <b>recinzioni antipredazione</b>.</p>
+        </div>
+        <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px; border-left-color:#856404;">
+            <p class="kpi-val" style="font-size:1.6rem; color:#856404;">14,7%</p>
+            <p class="kpi-label" style="margin-top:2px;">Casi accertati con <b>nessuna misura</b> esplicita.</p>
+        </div>
+        <div class="kpi-card kpi-card-neutral" style="padding-top: 8px; padding-bottom: 8px;">
+            <p class="kpi-val kpi-val-neutral" style="font-size:1.6rem;">58,1%</p>
+            <p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno semplicemente registrato l'informazione.</p>
+        </div>
+    """),
       unsafe_allow_html=True,
   )
 
-  # Integrazione del collegamento sui fondi ordinari esigui
   st.write(
       "E quando le Regioni stanziano fondi per finanziare cani e recinzioni, gli"
       " importi ordinari sono storicamente esigui — un problema che"
@@ -434,13 +431,13 @@ st.write(
 )
 
 st.markdown(
-    """
-<div class="kpi-card" style="text-align: center; padding: 30px;">
-    <p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
-    <p class="kpi-label" style="font-size:1.3rem;"><b>Aziende bovine scomparse in soli 5 anni (2015-2019)</b></p>
-    <p class="kpi-label" style="max-width: 700px; margin: 15px auto 0;">I dati BDN citati da ISPRA mostrano che, mentre le stalle sono crollate del 12,7% (da 169.601 a 148.074), il numero di capi nazionali è rimasto stabile. La dimensione media aziendale è salita del +16%: <b>il settore si consolida accentrandosi nelle mani dei grandi allevamenti al chiuso, spazzando via le realtà medio-piccole più esposte sul territorio.</b></p>
-</div>
-""",
+    textwrap.dedent("""
+    <div class="kpi-card" style="text-align: center; padding: 30px;">
+        <p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
+        <p class="kpi-label" style="font-size:1.3rem;"><b>Aziende bovine scomparse in soli 5 anni (2015-2019)</b></p>
+        <p class="kpi-label" style="max-width: 700px; margin: 15px auto 0;">I dati BDN citati da ISPRA mostrano che, mentre le stalle sono crollate del 12,7% (da 169.601 a 148.074), il numero di capi nazionali è rimasto stabile. La dimensione media aziendale è salita del +16%: <b>il settore si consolida accentrandosi nelle mani dei grandi allevamenti al chiuso, spazzando via le realtà medio-piccole più esposte sul territorio.</b></p>
+    </div>
+"""),
     unsafe_allow_html=True,
 )
 
@@ -449,13 +446,12 @@ st.markdown("---")
 # --- ATTO 5 ---
 st.subheader("5. Oltre la caccia: cosa serve davvero")
 
-# Presa di posizione etica esplicita
 st.markdown(
-    """
-<div class="ethical-callout">
-    <b>Prima ancora dei numeri, per noi vale un principio semplice:</b> il lupo è una specie protetta e ha lo stesso diritto di esistere nel nostro ecosistema. Sterminarlo perché è la scorciatoia più comoda, invece di affrontare le vere cause del conflitto, non è una soluzione — è solo il modo più rapido per evitare di risolvere il problema.
-</div>
-""",
+    textwrap.dedent("""
+    <div class="ethical-callout">
+        <b>Prima ancora dei numeri, per noi vale un principio semplice:</b> il lupo è una specie protetta e ha lo stesso diritto di esistere nel nostro ecosistema. Sterminarlo perché è la scorciatoia più comoda, invece di affrontare le vere cause del conflitto, non è una soluzione — è solo il modo più rapido per evitare di risolvere il problema.
+    </div>
+"""),
     unsafe_allow_html=True,
 )
 
@@ -478,13 +474,13 @@ with col5_left:
   )
 
   st.markdown(
-      """
-    <div class="kpi-card" style="margin-top: 15px;">
-        <p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
-        <p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
-        <p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
-    </div>
-    """,
+      textwrap.dedent("""
+        <div class="kpi-card" style="margin-top: 15px;">
+            <p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
+            <p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
+            <p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
+        </div>
+    """),
       unsafe_allow_html=True,
   )
 
@@ -501,7 +497,6 @@ with col5_right:
       " fare luce su queste dinamiche:"
   )
 
-  # Citazione testuale verbatim ripristinata dal report Gervasi et al. 2022
   st.info(
       "📌 *«è importante individuare le caratteristiche delle aziende definite"
       " 'croniche' per poter elaborare interventi specifici che permettano di"
@@ -521,7 +516,7 @@ with st.expander("📝 Nota sui dati, Caveat e Dataset"):
   st.markdown("""
     **Limiti del Dataset ISPRA:**
     * I dati di impatto nazionali dettagliati sulle aziende (Gervasi et al. 2022) coprono il quinquennio **2015-2019**, rappresentando l'ultimo studio sistematico standardizzato disponibile su scala paese, basato sull'incrocio tra rimborsi regionali e Banca Dati Nazionale (BDN).
-    * Non esiste una ripartizione regionale pulita per la popolazione di lupo in Appennino, poiché il modello scientifico ISPRA stima le densità su 13 macro-aree di campionamento che valicani i confini amministrativi.
+    * Non esiste una ripartizione regionale pulita per la popolazione di lupo in Appennino, poiché il modello scientifico ISPRA stima le densità su 13 macro-aree di campionamento che valicano i confini amministrativi.
 
     **Inquadramento Normativo (2026):**
     * Il Disegno di Legge Caccia in Italia (introduzione dei 'bioregolatori') è in iter al Senato.
