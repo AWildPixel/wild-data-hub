@@ -12,7 +12,6 @@ st.set_page_config(
 )
 
 # --- CSS PER COMPONENTI CUSTOM ---
-# Inseriamo il CSS tutto compattato a sinistra per evitare conflitti Markdown
 css_style = """
 <style>
 .kpi-card { background-color: #f8f9fa; border-left: 4px solid #D32F2F; padding: 16px 20px; border-radius: 4px; margin-bottom: 16px; }
@@ -135,13 +134,13 @@ with col1_right:
     col_d1, col_d2 = st.columns(2)
     with col_d1:
         st.plotly_chart(
-            make_donut(impatto_bovini, "1 azienda bovina su 300 colpita ogni anno", "0,33%"),
+            make_donut(impatto_bovini, "1 azienda bovina su 300 colpita", "0,33%"),
             use_container_width=True,
             config={"displayModeBar": False, "scrollZoom": False},
         )
     with col_d2:
         st.plotly_chart(
-            make_donut(impatto_ovicaprini, "1 azienda ovicaprina su 140 colpita ogni anno", "0,70%"),
+            make_donut(impatto_ovicaprini, "1 azienda ovicaprina su 140", "0,70%"),
             use_container_width=True,
             config={"displayModeBar": False, "scrollZoom": False},
         )
@@ -179,7 +178,7 @@ st.markdown("#### 📍 La mappa del conflitto")
 # Checkbox per la mappa interattiva SVG
 col_check1, col_check2 = st.columns(2)
 with col_check1:
-    show_pascoli = st.checkbox("🟦 Mostra pascoli estensivi (Alpi Occidentali e Appennini)", value=True)
+    show_pascoli = st.checkbox("🟦 Mostra pascoli estensivi (Alpi e Appennini)", value=True)
 with col_check2:
     show_lupo = st.checkbox("🟥 Mostra distribuzione del lupo", value=False)
 
@@ -187,25 +186,45 @@ opacity_pascoli = 0.5 if show_pascoli else 0.0
 opacity_lupo = 0.5 if show_lupo else 0.0
 opacity_overlap = 1.0 if (show_pascoli and show_lupo) else 0.0
 
+# Mappa d'Italia vettoriale rivisitata (più realistica e con scala proporzionata)
 svg_map = f"""
 <div style="display: flex; justify-content: center; margin: 20px 0;">
 <svg width="400" height="500" viewBox="0 0 400 500" style="background-color: transparent;">
 <defs>
 <pattern id="hatch" width="12" height="12" patternTransform="rotate(45)"><rect width="12" height="12" fill="rgba(25, 118, 210, 0.4)" /><line x1="0" y1="0" x2="0" y2="12" stroke="rgba(211, 47, 47, 0.8)" stroke-width="6" /></pattern>
-<clipPath id="lupo-clip"><path d="M 60 120 C 80 80, 160 90, 180 130 C 200 170, 240 250, 280 340 C 310 400, 270 420, 240 370 C 200 300, 150 200, 90 180 C 70 170, 50 140, 60 120 Z" /></clipPath>
 </defs>
-<path d="M 50 100 Q 150 50, 230 100 Q 250 150, 280 250 Q 320 380, 280 430 Q 250 450, 230 380 Q 200 320, 150 220 Q 90 180, 50 150 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
-<circle cx="120" cy="350" r="25" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
-<ellipse cx="190" cy="450" rx="35" ry="20" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
-<path d="M 50 110 C 70 70, 150 80, 190 120 C 220 160, 260 260, 290 350 C 320 410, 280 430, 250 380 C 210 310, 160 210, 80 190 C 60 180, 40 140, 50 110 Z" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;" />
-<path d="M 60 120 C 80 80, 160 90, 180 130 C 200 170, 240 250, 280 340 C 310 400, 270 420, 240 370 C 200 300, 150 200, 90 180 C 70 170, 50 140, 60 120 Z" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;" />
-<path d="M 50 110 C 70 70, 150 80, 190 120 C 220 160, 260 260, 290 350 C 320 410, 280 430, 250 380 C 210 310, 160 210, 80 190 C 60 180, 40 140, 50 110 Z" fill="url(#hatch)" clip-path="url(#lupo-clip)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;"/>
+<g transform="scale(0.95, 1.15) translate(10, -30)">
+    <!-- Base Italia (Penisola) -->
+    <path d="M 60,90 Q 80,60 110,60 Q 150,50 180,50 Q 220,55 240,60 Q 270,70 270,80 Q 260,90 250,100 Q 260,110 260,120 Q 270,140 280,160 Q 290,180 300,200 Q 320,210 340,220 Q 350,225 330,235 Q 350,250 360,270 Q 370,290 380,310 Q 365,315 350,320 Q 340,305 330,290 Q 320,300 310,310 Q 305,335 300,360 Q 290,380 280,400 Q 275,395 270,390 Q 275,375 280,360 Q 275,345 270,330 Q 260,320 250,310 Q 235,290 220,270 Q 210,250 200,230 Q 190,215 180,200 Q 165,190 150,180 Q 125,175 100,170 Q 90,155 80,140 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
+    <!-- Sardegna -->
+    <path d="M 110,230 Q 125,225 140,230 Q 142,250 145,270 Q 140,300 135,330 Q 125,335 115,330 Q 110,300 105,270 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
+    <!-- Sicilia -->
+    <path d="M 270,410 Q 250,405 230,410 Q 210,415 190,420 Q 195,435 200,450 Q 225,460 250,470 Q 260,455 270,440 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
+
+    <!-- Livello Pascoli Estensivi (Blu) -->
+    <path d="M 65,95 Q 85,75 110,75 Q 150,65 180,65 Q 210,70 230,75 Q 255,85 255,90 Q 240,105 230,100 Q 210,90 180,90 Q 150,90 110,95 Q 85,110 70,115 Z" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;"/>
+    <path d="M 120,165 Q 160,180 190,205 Q 220,235 250,270 Q 275,305 285,340 Q 295,370 280,390 Q 290,360 280,320 Q 270,285 240,245 Q 210,205 170,175 Z" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;"/>
+    <circle cx="190" cy="225" r="10" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;" />
+    <circle cx="335" cy="225" r="10" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;" />
+
+    <!-- Livello Lupo (Rosso) -->
+    <path d="M 60,90 Q 80,70 105,70 Q 145,60 175,60 Q 205,65 225,70 Q 250,80 250,85 Q 235,100 225,95 Q 205,85 175,85 Q 145,85 105,90 Q 80,105 65,110 Z" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;"/>
+    <path d="M 115,160 Q 155,175 185,200 Q 215,230 245,265 Q 270,300 280,335 Q 290,365 275,385 Q 285,355 275,315 Q 265,280 235,240 Q 205,200 165,170 Z" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;"/>
+    <circle cx="190" cy="225" r="8" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;" />
+    <circle cx="335" cy="225" r="8" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;" />
+
+    <!-- Sovrapposizione (Tratteggio visibile solo se entrambi attivi) -->
+    <path d="M 65,95 Q 85,75 110,75 Q 150,65 180,65 Q 210,70 230,75 Q 255,85 255,90 Q 240,105 230,100 Q 210,90 180,90 Q 150,90 110,95 Q 85,110 70,115 Z" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;"/>
+    <path d="M 120,165 Q 160,180 190,205 Q 220,235 250,270 Q 275,305 285,340 Q 295,370 280,390 Q 290,360 280,320 Q 270,285 240,245 Q 210,205 170,175 Z" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;"/>
+    <circle cx="190" cy="225" r="8" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;" />
+    <circle cx="335" cy="225" r="8" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;" />
+</g>
 </svg>
 </div>
 """
 st.markdown(svg_map, unsafe_allow_html=True)
 st.caption(
-    "*Rappresentazione grafica semplificata delle zone di concentrazione, basata sulle mappe del report impatto zootecnico ISPRA (Fig. 4) e sulla mappa di distribuzione nazionale del lupo. Non costituisce una mappa di precisione con confini amministrativi calcolati.*"
+    "*Rappresentazione grafica delle zone di concentrazione (sovrapposizione Alpi Occidentali e dorsale Appenninica), basata sulle mappe del report impatto zootecnico ISPRA e sulla distribuzione del lupo.*"
 )
 
 st.markdown("#### 🎯 1 azienda su 4 subisce oltre il 70% dei danni")
