@@ -1,36 +1,25 @@
 import math
+import textwrap
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-
 # Funzione helper per impedire a Markdown di creare blocchi di codice
 def clean_html(html_str: str) -> str:
-    return "\n".join(line.strip() for line in html_str.splitlines())
-
+    return textwrap.dedent(html_str).strip()
 
 # --- CONFIGURAZIONE PAGINA ---
 st.set_page_config(
-    page_title="Wild Data - Il lupo e gli allevatori",
+    page_title="Wild Data - Tutta colpa del lupo (?)",
     page_icon="🐺",
     layout="wide",
 )
 
-# --- CSS PER OPTIMIZATION MOBILE & SCROLL MAPPE E COMPONENTI CUSTOM ---
+# --- CSS PER COMPONENTI CUSTOM ---
 st.markdown(
     clean_html("""
     <style>
-    /* 1. Riabilita lo scorrimento naturale su tutto il contenitore del grafico */
-    [data-testid="stPlotlyChart"] {
-        touch-action: auto !important;
-    }
-    /* 2. Disabilita lo scorrimento della pagina SOLO quando il tocco avviene esattamente sui livelli della mappa */
-    .js-plotly-plot .geolayer, 
-    .js-plotly-plot .draglayer,
-    .js-plotly-plot .geo {
-        touch-action: none !important;
-    }
     /* Stili personalizzati per KPI e Pittogrammi */
     .kpi-card {
         background-color: #f8f9fa;
@@ -83,18 +72,8 @@ st.markdown(
         font-size: 0.9rem;
         color: #666;
     }
-    .ethical-callout {
-        background-color: #fff3cd;
-        border-left: 5px solid #f1c40f;
-        padding: 18px 24px;
-        border-radius: 4px;
-        font-size: 1.1rem;
-        line-height: 1.6;
-        color: #333;
-        margin-bottom: 25px;
-    }
     </style>
-"""),
+    """),
     unsafe_allow_html=True,
 )
 
@@ -103,28 +82,16 @@ st.page_link("Home.py", label="🏠 Torna alla Home di Wild Data")
 st.markdown("---")
 
 # TITOLO E INTRODUZIONE NARRATIVA
-st.title("🐺 Il lupo, i piccoli allevatori e chi li lascia soli")
+st.title("🐺 Tutta colpa del lupo (?)")
 st.markdown(
-    "*Settembre 2026. Negli USA un ordine esecutivo avvia la revisione delle"
-    " tutele storiche per il lupo grigio. In Europa, la Convenzione di Berna ne"
-    " ha declassato lo status. In Italia, la riforma del sistema venatorio"
-    " introduce la figura dei cacciatori 'bioregolatori'. Ma cosa dicono davvero"
-    " i dati ufficiali?*"
+    "*Dagli Stati Uniti all'Europa, si diffonde ancora una volta l'idea che l'unico modo per proteggere gli allevatori sia cacciare il lupo. A parte l'aspetto etico (potete immaginare la mia opinione al riguardo), i dati ci raccontano in realtà una storia più complicata — e la soluzione non è così semplice...*"
 )
 st.markdown("---")
 
-# DATI HARDCODED
-data_popolazione = pd.DataFrame({
-    "Macro-Area": ["Alpi", "Appennino"],
-    "Lupi": [952, 2388],
-    "Lat": [46.0, 42.5],
-    "Lon": [10.5, 13.5],
-})
-
+# DATI HARDCODED PER GRAFICI
 impatto_bovini = pd.DataFrame(
     {"Stato": ["Aziende Colpite", "Non Colpite"], "Valore": [0.33, 99.67]}
 )
-
 impatto_ovicaprini = pd.DataFrame(
     {"Stato": ["Aziende Colpite", "Non Colpite"], "Valore": [0.70, 99.30]}
 )
@@ -134,11 +101,10 @@ COLOR_NEUTRAL = "#E0E0E0"
 COLOR_BG = "rgba(0,0,0,0)"
 
 # --- ATTO 1 ---
-st.subheader("1. Un'emergenza... che non c'è nei numeri generali")
+st.subheader("1. Una piaga per tutto il settore… o no?")
 st.write(
     "Il dibattito politico e mediatico racconta spesso il ritorno del lupo come"
-    " un'emergenza fuori controllo per l'intera zootecnia italiana. Tuttavia,"
-    " incrociando i dati ufficiali dei risarcimenti **ISPRA / Ministero"
+    " un'emergenza fuori controllo. Tuttavia, incrociando i dati ufficiali dei risarcimenti **ISPRA / Ministero"
     " dell'Ambiente** con la Banca Dati Nazionale (BDN), l'impatto complessivo"
     " risulta estremamente contenuto."
 )
@@ -165,11 +131,11 @@ with col1_left:
                 <p class="kpi-label">Lupi in Italia oggi<br><i>(Monitoraggio ISPRA)</i></p>
             </div>
         </div>
-    """),
+        """),
         unsafe_allow_html=True,
     )
 
-    st.markdown("#### 🌪️ Il vero peso sui bilanci: il clima")
+    st.markdown("#### 🌪️ Lupo: quanto mi costi?")
     st.write(
         "Per dare una proporzione reale all'allarme economico: i danni diretti"
         " da predazione valgono circa **1,8 milioni di euro all'anno** a livello"
@@ -181,11 +147,9 @@ with col1_left:
     )
 
 with col1_right:
-    st.markdown("#### 📊 Quota di Aziende Colpite ogni anno")
+    st.markdown("#### 📊 Le conseguenze per gli allevamenti")
     st.write(
-        "In termini assoluti, la percentuale di aziende zootecniche che subisce"
-        " predazioni ogni anno è marginale rispetto al totale nazionale dei capi"
-        " e delle stalle iscritte:"
+        "È innegabile che i casi di predazione siano aumentati negli ultimi anni, seguendo la naturale espansione della specie. Tuttavia, se guardiamo ai numeri assoluti, la percentuale di aziende che subisce predazioni ogni anno resta marginale rispetto al totale nazionale:"
     )
 
     def make_donut(df, title, accent_val):
@@ -222,13 +186,13 @@ with col1_right:
     col_d1, col_d2 = st.columns(2)
     with col_d1:
         st.plotly_chart(
-            make_donut(impatto_bovini, "1 azienda bovina su 300 colpita", "0,33%"),
+            make_donut(impatto_bovini, "1 azienda bovina su 300 colpita ogni anno", "0,33%"),
             use_container_width=True,
             config={"displayModeBar": False, "scrollZoom": False},
         )
     with col_d2:
         st.plotly_chart(
-            make_donut(impatto_ovicaprini, "1 azienda ovicaprina su 140", "0,70%"),
+            make_donut(impatto_ovicaprini, "1 azienda ovicaprina su 140 colpita ogni anno", "0,70%"),
             use_container_width=True,
             config={"displayModeBar": False, "scrollZoom": False},
         )
@@ -246,125 +210,140 @@ with col1_right:
 st.markdown("---")
 
 # --- ATTO 2 ---
-st.subheader("2. L'illusione della media: il danno è un hotspot concentrato")
+st.subheader("2. Le vere vittime: i piccoli allevatori")
 st.write(
-    "Se l'impatto medio è inferiore all'1%, da dove nasce l'esasperazione degli"
-    " allevatori? Dal fatto che il danno **non è distribuito equamente**, ma si"
-    " accanisce in modo devastante su una strettissima minoranza di realtà"
-    " produttive."
+    "Se l'impatto medio è così basso, da dove nasce l'esasperazione? Dal fatto che il danno **non è distribuito equamente**, ma si accanisce in modo devastante su una strettissima minoranza di realtà produttive."
 )
 
-col2_left, col2_right = st.columns([1, 1])
+st.write(
+    "Per capire chi rischia davvero di più, bisogna prima sapere come si alleva in Italia — e in particolare chi lo fa nel modo più esposto. Si tratta del cosiddetto **allevamento estensivo meridionale**: aziende piccole, meno di 100 capi, gestite a pascolo libero e transumanza, spesso l'unica attività economica sostenibile in territori dove altro non cresce. È anche il modello più povero economicamente dei tre esistenti in Italia (dati ISMEA) — e non a caso, quello più difficile da proteggere: capi che si muovono su territori ampi, difficili da recintare, con sorveglianza discontinua e poche risorse per cani da guardiania o recinzioni fisse."
+)
+st.write(
+    "E dove si concentra questo tipo di allevamento in Italia? Escludendo Sicilia e Sardegna (le aree a densità più alta in assoluto, ma fuori dall'areale del lupo), la fascia con più capi ovicaprini sulla terraferma è la **dorsale appenninica centro-meridionale**, insieme al **settore occidentale delle Alpi** — con due sacche isolate a Grosseto e sul Gargano."
+)
+st.write(
+    "Vi suona familiare? È la stessa identica area in cui si concentra la popolazione di lupo. Non è un caso: dove i due mondi si sovrappongono, nasce il conflitto."
+)
 
-with col2_left:
-    st.markdown("#### 📍 Il lupo è tornato, ma non ovunque allo stesso modo")
-    sizes = [math.sqrt(val) * 1.5 for val in data_popolazione["Lupi"]]
+st.markdown("#### 📍 La mappa del conflitto")
 
-    fig_map = go.Figure()
-    fig_map.add_trace(
-        go.Scattergeo(
-            lon=data_popolazione["Lon"],
-            lat=data_popolazione["Lat"],
-            text=["Alpi: 952 lupi", "Appennino: 2.388 lupi"],
-            mode="markers+text",
-            textposition=["top center", "bottom center"],
-            marker=dict(
-                size=sizes,
-                color=COLOR_ACCENT,
-                opacity=0.8,
-                line=dict(width=1, color="#4A4A4A"),
-            ),
-            hovertemplate="<b>%{text}</b><extra></extra>",
-        )
-    )
-    fig_map.update_layout(
-        geo=dict(
-            scope="europe",
-            center=dict(lat=42.5, lon=12.0),
-            projection=dict(scale=5.8),
-            showland=True,
-            landcolor="#E5E5E5",
-            showcountries=True,
-            countrycolor="#FFFFFF",
-            showcoastlines=True,
-            coastlinecolor="#B0B0B0",
-        ),
-        margin=dict(l=0, r=0, t=10, b=10),
-        height=320,
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-    )
-    st.plotly_chart(fig_map, use_container_width=True)
+# Checkbox per la mappa interattiva SVG ("Pascoli estensivi" attiva di default)
+col_check1, col_check2 = st.columns(2)
+with col_check1:
+    show_pascoli = st.checkbox("🟦 Mostra pascoli estensivi (Alpi Occidentali e Appennini)", value=True)
+with col_check2:
+    show_lupo = st.checkbox("🟥 Mostra distribuzione del lupo", value=False)
 
-    st.write(
-        "Gli hotspot dei danni si concentrano lungo la dorsale appenninica"
-        " centrale, in alcune aree del Sud e, per le pecore, nel nord-ovest"
-        " alpino. Questa mappa del conflitto non è una 'scelta' del lupo: è la"
-        " semplice **sovrapposizione geografica** tra le aree ad alta densità di"
-        " lupi e le zone in cui si concentra la maggior parte degli allevamenti a"
-        " pascolo estensivo in Italia."
-    )
+# Logica per mostrare i livelli SVG
+opacity_pascoli = 0.5 if show_pascoli else 0.0
+opacity_lupo = 0.5 if show_lupo else 0.0
+opacity_overlap = 1.0 if (show_pascoli and show_lupo) else 0.0
 
-with col2_right:
-    st.markdown("#### 🎯 1 azienda su 5 subisce oltre il 60% dei danni")
+# Illustrazione SVG Statica dell'Italia con i livelli (semplificata)
+svg_map = f"""
+<div style="display: flex; justify-content: center; margin: 20px 0;">
+    <svg width="400" height="500" viewBox="0 0 400 500" style="background-color: transparent;">
+        <defs>
+            <!-- Pattern di sovrapposizione -->
+            <pattern id="hatch" width="12" height="12" patternTransform="rotate(45)">
+                <rect width="12" height="12" fill="rgba(25, 118, 210, 0.4)" />
+                <line x1="0" y1="0" x2="0" y2="12" stroke="rgba(211, 47, 47, 0.8)" stroke-width="6" />
+            </pattern>
+            <!-- Maschera per l'intersezione perfetta -->
+            <clipPath id="lupo-clip">
+                <path d="M 60 120 C 80 80, 160 90, 180 130 C 200 170, 240 250, 280 340 C 310 400, 270 420, 240 370 C 200 300, 150 200, 90 180 C 70 170, 50 140, 60 120 Z" />
+            </clipPath>
+        </defs>
+        
+        <!-- Base Italia (Stilizzata e Semplificata) -->
+        <path d="M 50 100 Q 150 50, 230 100 Q 250 150, 280 250 Q 320 380, 280 430 Q 250 450, 230 380 Q 200 320, 150 220 Q 90 180, 50 150 Z" 
+              fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
+        <!-- Isole Semplificate -->
+        <circle cx="120" cy="350" r="25" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/> <!-- Sardegna -->
+        <ellipse cx="190" cy="450" rx="35" ry="20" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/> <!-- Sicilia -->
 
-    html_pictogram = clean_html("""
-        <div class="pictogram-container">
-            <!-- COLONNA 1: HOTSPOT (POCHE AZIENDE, TANTI DANNI) -->
-            <div class="picto-col">
-                <div class="picto-label" style="color: #D32F2F; margin-bottom: 10px;">Gli "Hotspot"</div>
-                
-                <!-- DANNO (Sopra) -->
-                <div style="height: 120px; display: flex; align-items: flex-end;">
-                    <svg width="79" height="79" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.82 7,18.47V22H9V20H11V22H13V20H15V22H17V18.46C19.47,16.81 21,14 21,11A9,9 0 0,0 12,2M8,11A2,2 0 0,1 10,13A2,2 0 0,1 8,15A2,2 0 0,1 6,13A2,2 0 0,1 8,11M16,11A2,2 0 0,1 18,13A2,2 0 0,1 16,15A2,2 0 0,1 14,13A2,2 0 0,1 16,11M12,14L13.5,17H10.5L12,14Z" /></svg>
-                </div>
-                <div class="picto-label" style="color: #D32F2F;">62,2%</div>
-                <div class="picto-sub">dei bovini predati totali</div>
-                
-                <!-- AZIENDA (Sotto) -->
-                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
-                    <svg width="45" height="45" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
-                </div>
-                <div class="picto-label">20,5%</div>
-                <div class="picto-sub">delle aziende colpite</div>
-            </div>
+        <!-- Livello Pascoli Estensivi (Blu) -->
+        <path d="M 50 110 C 70 70, 150 80, 190 120 C 220 160, 260 260, 290 350 C 320 410, 280 430, 250 380 C 210 310, 160 210, 80 190 C 60 180, 40 140, 50 110 Z" 
+              fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;" />
+
+        <!-- Livello Lupo (Rosso) -->
+        <path d="M 60 120 C 80 80, 160 90, 180 130 C 200 170, 240 250, 280 340 C 310 400, 270 420, 240 370 C 200 300, 150 200, 90 180 C 70 170, 50 140, 60 120 Z" 
+              fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;" />
+
+        <!-- Sovrapposizione (Tratteggio visibile solo se entrambi attivi) -->
+        <path d="M 50 110 C 70 70, 150 80, 190 120 C 220 160, 260 260, 290 350 C 320 410, 280 430, 250 380 C 210 310, 160 210, 80 190 C 60 180, 40 140, 50 110 Z" 
+              fill="url(#hatch)" clip-path="url(#lupo-clip)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;"/>
+    </svg>
+</div>
+"""
+st.markdown(svg_map, unsafe_allow_html=True)
+st.caption(
+    "*Rappresentazione grafica semplificata delle zone di concentrazione, basata sulle mappe del report impatto zootecnico ISPRA (Fig. 4) e sulla mappa di distribuzione nazionale del lupo. Non costituisce una mappa di precisione con confini amministrativi calcolati.*"
+)
+
+st.markdown("#### 🎯 1 azienda su 4 subisce oltre il 70% dei danni")
+st.write("I dati sugli ovicaprini (pecore e capre) mostrano in modo estremo questa sproporzione: una piccola fetta di aziende fa da parafulmine per l'intero settore.")
+
+# Calcolo programmatico dimensioni icone pittogramma: size = k * sqrt(valore)
+k_picto = 10.35  # costante k per ottenere dimensione massima ~89px sul valore max (74.1%)
+sz_danno_hotspot = int(round(k_picto * math.sqrt(73.3)))  # ~89px
+sz_az_hotspot = int(round(k_picto * math.sqrt(25.9)))     # ~53px
+sz_danno_altre = int(round(k_picto * math.sqrt(26.7)))     # ~53px
+sz_az_altre = int(round(k_picto * math.sqrt(74.1)))        # ~89px
+
+# L'errore nel path SVG era nel ciclo M8,11... che si chiudeva su 16,11. È stato corretto in 8,11 in entrambe le occorrenze.
+html_pictogram = clean_html(f"""
+    <div class="pictogram-container">
+        <!-- COLONNA 1: HOTSPOT (POCHE AZIENDE, TANTI DANNI) -->
+        <div class="picto-col">
+            <div class="picto-label" style="color: #D32F2F; margin-bottom: 10px;">Gli "Hotspot"</div>
             
-            <!-- COLONNA 2: TUTTE LE ALTRE (TANTE AZIENDE, POCHI DANNI) -->
-            <div class="picto-col">
-                <div class="picto-label" style="color: #666; margin-bottom: 10px;">Tutte le altre</div>
-                
-                <!-- DANNO (Sopra) -->
-                <div style="height: 120px; display: flex; align-items: flex-end;">
-                    <svg width="61" height="61" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.82 7,18.47V22H9V20H11V22H13V20H15V22H17V18.46C19.47,16.81 21,14 21,11A9,9 0 0,0 12,2M8,11A2,2 0 0,1 10,13A2,2 0 0,1 8,15A2,2 0 0,1 6,13A2,2 0 0,1 8,11M16,11A2,2 0 0,1 18,13A2,2 0 0,1 16,15A2,2 0 0,1 14,13A2,2 0 0,1 16,11M12,14L13.5,17H10.5L12,14Z" /></svg>
-                </div>
-                <div class="picto-label" style="color: #D32F2F;">37,8%</div>
-                <div class="picto-sub">dei bovini predati totali</div>
-                
-                <!-- AZIENDA (Sotto) -->
-                <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
-                    <svg width="89" height="89" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
-                </div>
-                <div class="picto-label">79,5%</div>
-                <div class="picto-sub">delle aziende colpite</div>
+            <!-- DANNO (Sopra - Teschio) -->
+            <div style="height: 120px; display: flex; align-items: flex-end;">
+                <svg width="{sz_danno_hotspot}" height="{sz_danno_hotspot}" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.82 7,18.47V22H9V20H11V22H13V20H15V22H17V18.46C19.47,16.81 21,14 21,11A9,9 0 0,0 12,2M8,11A2,2 0 0,1 10,13A2,2 0 0,1 8,15A2,2 0 0,1 6,13A2,2 0 0,1 8,11M16,11A2,2 0 0,1 18,13A2,2 0 0,1 16,15A2,2 0 0,1 14,13A2,2 0 0,1 16,11M12,14L13.5,17H10.5L12,14Z" /></svg>
             </div>
+            <div class="picto-label" style="color: #D32F2F;">73,3%</div>
+            <div class="picto-sub">dei capi predati totali</div>
+            
+            <!-- AZIENDA (Sotto - Fabbrica) -->
+            <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
+                <svg width="{sz_az_hotspot}" height="{sz_az_hotspot}" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
+            </div>
+            <div class="picto-label">25,9%</div>
+            <div class="picto-sub">delle aziende colpite</div>
         </div>
-    """)
-    st.markdown(html_pictogram, unsafe_allow_html=True)
-    st.caption(
-        "*Dati di concentrazione del danno per la filiera bovina. Il rapporto è"
-        " ancora più estremo per il settore ovicaprino (il 25,9% delle stalle"
-        " subisce il 73,3% dei danni).*"
-    )
+        
+        <!-- COLONNA 2: TUTTE LE ALTRE (TANTE AZIENDE, POCHI DANNI) -->
+        <div class="picto-col">
+            <div class="picto-label" style="color: #666; margin-bottom: 10px;">Tutte le altre</div>
+            
+            <!-- DANNO (Sopra - Teschio) -->
+            <div style="height: 120px; display: flex; align-items: flex-end;">
+                <svg width="{sz_danno_altre}" height="{sz_danno_altre}" viewBox="0 0 24 24"><path fill="#D32F2F" d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.82 7,18.47V22H9V20H11V22H13V20H15V22H17V18.46C19.47,16.81 21,14 21,11A9,9 0 0,0 12,2M8,11A2,2 0 0,1 10,13A2,2 0 0,1 8,15A2,2 0 0,1 6,13A2,2 0 0,1 8,11M16,11A2,2 0 0,1 18,13A2,2 0 0,1 16,15A2,2 0 0,1 14,13A2,2 0 0,1 16,11M12,14L13.5,17H10.5L12,14Z" /></svg>
+            </div>
+            <div class="picto-label" style="color: #D32F2F;">26,7%</div>
+            <div class="picto-sub">dei capi predati totali</div>
+            
+            <!-- AZIENDA (Sotto - Fabbrica) -->
+            <div style="height: 120px; display: flex; align-items: flex-end; margin-top: 20px;">
+                <svg width="{sz_az_altre}" height="{sz_az_altre}" viewBox="0 0 24 24"><path fill="#888" d="M12 2L2 12h3v8h14v-8h3L12 2zm0 2.8L17.2 10H6.8L12 4.8z"/></svg>
+            </div>
+            <div class="picto-label">74,1%</div>
+            <div class="picto-sub">delle aziende colpite</div>
+        </div>
+    </div>
+""")
+st.markdown(html_pictogram, unsafe_allow_html=True)
+st.caption(
+    "*Il settore bovino se la cava meglio — ma anche lì una minoranza di aziende si porta via la parte più consistente dei danni (il 20,5% delle aziende subisce il 62,2% dei danni).*"
+)
 
 st.markdown("---")
 
 # --- ATTO 3 ---
-st.subheader("3. Burocrazia paralizzata e fondi di prevenzione insufficienti")
+st.subheader("3. La vera minaccia… la burocrazia")
 st.write(
-    "Mentre il dibattito si concentra sul cacciare o declassare la specie, i"
-    " dati mettono a nudo il vero problema odierno: un sistema di supporto"
-    " pubblico lento, farraginoso e spesso inaccessibile, sia per i rimborsi"
-    " che per l'acquisto di difese."
+    "Mentre si propongono 'soluzioni' come ridurre le tutele per il lupo o addirittura cacciarlo, i dati mettono a nudo il vero problema odierno: un sistema di supporto pubblico lento, farraginoso e spesso inaccessibile, sia per i rimborsi che per l'acquisto di difese."
 )
 
 col3_left, col3_right = st.columns([1, 1])
@@ -377,22 +356,17 @@ with col3_left:
             <p class="kpi-val" style="font-size:3rem;">80,4%</p>
             <p class="kpi-label" style="font-size:1.1rem;">Degli allevatori colpiti aspetta <b>da 2 a oltre 12 mesi</b> per ricevere l'indennizzo di un capo ucciso.</p>
         </div>
-    """),
+        """),
         unsafe_allow_html=True,
     )
     st.write(
-        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito"
-        " per una piccola azienda che nel frattempo ha perso capitale produttivo"
-        " e continua a sostenere le spese vive quotidiane."
+        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito per una piccola azienda che nel frattempo ha perso una fonte di reddito e, ovviamente, continua a sostenere le spese quotidiane."
     )
 
 with col3_right:
     st.markdown("#### 🛡️ L'emergenza della raccolta dati sulle difese")
     st.write(
-        "Come siamo messi a prevenzione sul campo? Analizzando i report"
-        " ufficiali nei luoghi degli attacchi accertati, emerge un quadro"
-        " disarmante non solo sulla mancanza di difese, ma sulla stessa"
-        " capacità delle Regioni di tracciarle:"
+        "Come siamo messi a prevenzione sul campo? Analizzando i report ufficiali nei luoghi degli attacchi accertati, emerge un quadro disarmante sulla capacità delle Regioni di tracciare i dati:"
     )
 
     st.markdown(
@@ -411,16 +385,10 @@ with col3_right:
         </div>
         <div class="kpi-card kpi-card-neutral" style="padding-top: 8px; padding-bottom: 8px;">
             <p class="kpi-val kpi-val-neutral" style="font-size:1.6rem;">58,1%</p>
-            <p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno semplicemente registrato l'informazione.</p>
+            <p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno registrato l'informazione.</p>
         </div>
-    """),
+        """),
         unsafe_allow_html=True,
-    )
-
-    st.write(
-        "E quando le Regioni stanziano fondi per finanziare cani e recinzioni, gli"
-        " importi ordinari sono storicamente esigui — un problema che"
-        " affronteremo più avanti."
     )
 
 st.markdown("---")
@@ -428,17 +396,7 @@ st.markdown("---")
 # --- ATTO 4 ---
 st.subheader("4. Il vero dramma: una morsa insostenibile sui piccoli")
 st.write(
-    "Tutti questi numeri assumono il loro peso reale se inseriti nel contesto di"
-    " mercato. Chi subisce più danni da lupo (spesso piccoli allevatori a"
-    " pascolo estensivo e transumanza in zone montane) deve **anche** affrontare"
-    " la concorrenza di aziende che diventano sempre più grandi, abbassando i"
-    " prezzi."
-)
-st.write(
-    "La spesa per difendersi dal predatore (recinzioni, mantenimento cani,"
-    " manodopera) non è una voce di costo isolata, ma un peso che affonda"
-    " bilanci già erosi dalle logiche dell'allevamento intensivo. È un cerchio"
-    " che si stringe sulle piccole realtà."
+    "Chi subisce più danni da lupo deve anche affrontare la concorrenza di aziende sempre più grandi, che spingono i prezzi verso il basso. E le spese per difendersi dal predatore — recinzioni, mantenimento dei cani, manodopera — non sono un costo isolato, ma un peso che si aggiunge a bilanci già messi sotto pressione. È un cerchio che si stringe da più lati sulle stesse realtà."
 )
 
 st.markdown(
@@ -446,77 +404,50 @@ st.markdown(
     <div class="kpi-card" style="text-align: center; padding: 30px;">
         <p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
         <p class="kpi-label" style="font-size:1.3rem;"><b>Aziende bovine scomparse in soli 5 anni (2015-2019)</b></p>
-        <p class="kpi-label" style="max-width: 700px; margin: 15px auto 0;">I dati BDN citati da ISPRA mostrano che, mentre le stalle sono crollate del 12,7% (da 169.601 a 148.074), il numero di capi nazionali è rimasto stabile. La dimensione media aziendale è salita del +16%: <b>il settore si consolida accentrandosi nelle mani dei grandi allevamenti al chiuso, spazzando via le realtà medio-piccole più esposte sul territorio.</b></p>
+        <p class="kpi-label" style="max-width: 700px; margin: 15px auto 0;">Tra il 2015 e il 2019 il numero di stalle in Italia è crollato del 12,7% — ma il numero di animali allevati è rimasto praticamente lo stesso. Cosa significa? Che il settore si sta concentrando sempre di più nelle mani di grandi allevamenti al chiuso, a scapito delle realtà medio-piccole, quelle più esposte sul territorio.</p>
     </div>
-"""),
+    """),
     unsafe_allow_html=True,
 )
 
 st.markdown("---")
 
 # --- ATTO 5 ---
-st.subheader("5. Oltre la caccia: cosa serve davvero")
+st.subheader("5. La soluzione")
+
+st.write(
+    "Molti considerano la caccia al lupo l'unica, vera soluzione al problema. Ma non è così."
+)
+st.write(
+    "Prima di tutto, una considerazione etica: il lupo è un animale del nostro territorio e ha tutto il diritto di continuare a viverci. Non è colpa sua se noi umani abbiamo progressivamente occupato sempre più aree selvatiche, limitando il suo habitat — semmai è compito nostro capire come convivere pacificamente con lui."
+)
+st.write(
+    "In secondo luogo, anche da un punto di vista puramente pratico: ridurre la sua popolazione sarebbe senza dubbio facile e veloce, ma non risolverebbe la vera natura del problema. La soluzione passa piuttosto da un cambiamento radicale nel sistema dei finanziamenti e nello studio del fenomeno."
+)
+
+st.markdown("#### 🔬 Studiare il fenomeno")
+st.write(
+    "Non puoi affrontare qualcosa che non conosci. Come abbiamo visto, nel 58% degli attacchi non sappiamo nemmeno se c'erano forme di difesa a protezione dell'allevamento — quindi è fondamentale che le istituzioni investano prima di tutto nella raccolta di dati e informazioni. Dobbiamo sapere cosa distingue davvero le aziende più esposte ai danni da lupo, per capire come proteggerle in modo efficace."
+)
+st.write(
+    "Lo dice chiaramente anche lo stesso report ISPRA: *«è importante individuare le caratteristiche delle aziende definite 'croniche' per poter elaborare interventi specifici che permettano di diminuire significativamente le perdite»*."
+)
+
+st.markdown("#### 💰 Il sostegno economico")
+st.write(
+    "Qualche bando qui e là non basta per sostenere i piccoli allevatori. È necessario garantire fondi costanti per finanziare sistemi di difesa come recinzioni e, soprattutto, il mantenimento dei cani da guardiania. In tal senso, l'Emilia-Romagna spicca come esempio da prendere a modello:"
+)
 
 st.markdown(
     clean_html("""
-    <div class="ethical-callout">
-        <b>Prima ancora dei numeri, per noi vale un principio semplice:</b> il lupo è una specie protetta e ha lo stesso diritto di esistere nel nostro ecosistema. Sterminarlo perché è la scorciatoia più comoda, invece di affrontare le vere cause del conflitto, non è una soluzione — è solo il modo più rapido per evitare di risolvere il problema.
+    <div class="kpi-card" style="margin-top: 15px;">
+        <p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
+        <p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
+        <p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
     </div>
-"""),
+    """),
     unsafe_allow_html=True,
 )
-
-st.write(
-    "Abbattere i lupi non risolve la natura strutturale del problema, che come"
-    " abbiamo visto è iper-concentrato su poche realtà (gli hotspot) spesso"
-    " prive di supporti efficaci. Le soluzioni passano piuttosto per un"
-    " radicale cambio di passo nei finanziamenti e nello studio del fenomeno."
-)
-
-col5_left, col5_right = st.columns([1, 1])
-
-with col5_left:
-    st.markdown("#### 💰 Il sostegno economico reale")
-    st.write(
-        "I bandi frammentari non bastano. Serve garantire fondi certi non solo"
-        " per le recinzioni, ma per coprire stabilmente i costosi **mantenimenti"
-        " dei cani da guardiania** e il lavoro extra degli allevatori. Il caso"
-        " dell'Emilia-Romagna traccia un modello per il futuro:"
-    )
-
-    st.markdown(
-        clean_html("""
-        <div class="kpi-card" style="margin-top: 15px;">
-            <p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
-            <p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
-            <p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
-        </div>
-    """),
-        unsafe_allow_html=True,
-    )
-
-with col5_right:
-    st.markdown("#### 🔬 Studiare gli 'Hotspot' (e raccogliere i dati)")
-    st.write(
-        "Non si può gestire ciò che non si conosce. Quel buco nero del"
-        " **58,1%** di attacchi senza dati sulle recinzioni è l'esempio plastico"
-        " di come le istituzioni debbano investire prima di tutto nel capire cosa"
-        " succede sul campo."
-    )
-    st.write(
-        "Nelle sue conclusioni, l'ISPRA ammette esplicitamente la necessità di"
-        " fare luce su queste dinamiche:"
-    )
-
-    st.info(
-        "📌 *«è importante individuare le caratteristiche delle aziende definite"
-        " 'croniche' per poter elaborare interventi specifici che permettano di"
-        " diminuire significativamente le perdite»*, si legge nel report ISPRA"
-        " (Gervasi et al. 2022). Finché non finanzieremo la ricerca ecologica su"
-        " questi hotspot circoscritti, qualsiasi politica di abbattimento sparerà"
-        " letteralmente nel mucchio, senza difendere i pochi pastori che portano"
-        " il vero peso economico della biodiversità."
-    )
 
 st.markdown("---")
 
