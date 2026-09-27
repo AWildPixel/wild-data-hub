@@ -70,17 +70,17 @@ with col1_left:
     )
 
     kpi_atto1 = """
-    <div style="display: flex; gap: 15px; margin-top: 20px;">
-        <div class="kpi-card kpi-card-neutral" style="flex: 1;">
-            <p class="kpi-val kpi-val-neutral">~100</p>
-            <p class="kpi-label">Lupi in Italia nel 1973<br><i>(Stima Zimen & Boitani)</i></p>
-        </div>
-        <div class="kpi-card" style="flex: 1;">
-            <p class="kpi-val">3.501</p>
-            <p class="kpi-label">Lupi in Italia oggi<br><i>(Monitoraggio ISPRA)</i></p>
-        </div>
-    </div>
-    """
+<div style="display: flex; gap: 15px; margin-top: 20px;">
+<div class="kpi-card kpi-card-neutral" style="flex: 1;">
+<p class="kpi-val kpi-val-neutral">~100</p>
+<p class="kpi-label">Lupi in Italia nel 1973<br><i>(Stima Zimen & Boitani)</i></p>
+</div>
+<div class="kpi-card" style="flex: 1;">
+<p class="kpi-val">3.501</p>
+<p class="kpi-label">Lupi in Italia oggi<br><i>(Monitoraggio ISPRA)</i></p>
+</div>
+</div>
+"""
     st.markdown(kpi_atto1, unsafe_allow_html=True)
 
     st.markdown("#### 🌪️ Lupo: quanto mi costi?")
@@ -134,13 +134,21 @@ with col1_right:
     col_d1, col_d2 = st.columns(2)
     with col_d1:
         st.plotly_chart(
-            make_donut(impatto_bovini, "1 azienda bovina su 300 colpita", "0,33%"),
+            make_donut(
+                impatto_bovini,
+                "1 azienda bovina su 300 colpita ogni anno",
+                "0,33%",
+            ),
             use_container_width=True,
             config={"displayModeBar": False, "scrollZoom": False},
         )
     with col_d2:
         st.plotly_chart(
-            make_donut(impatto_ovicaprini, "1 azienda ovicaprina su 140", "0,70%"),
+            make_donut(
+                impatto_ovicaprini,
+                "1 azienda ovicaprina su 140 colpita ogni anno",
+                "0,70%",
+            ),
             use_container_width=True,
             config={"displayModeBar": False, "scrollZoom": False},
         )
@@ -175,69 +183,79 @@ st.write(
 
 st.markdown("#### 📍 La mappa del conflitto")
 
-# Checkbox per la mappa interattiva SVG
+# Checkbox per la mappa interattiva Plotly
 col_check1, col_check2 = st.columns(2)
 with col_check1:
     show_pascoli = st.checkbox("🟦 Mostra pascoli estensivi (Alpi e Appennini)", value=True)
 with col_check2:
     show_lupo = st.checkbox("🟥 Mostra distribuzione del lupo", value=False)
 
-opacity_pascoli = 0.5 if show_pascoli else 0.0
-opacity_lupo = 0.5 if show_lupo else 0.0
-opacity_overlap = 1.0 if (show_pascoli and show_lupo) else 0.0
+# Creazione della mappa Plotly
+fig_map = go.Figure()
 
-# Mappa d'Italia vettoriale rivisitata (più realistica e con scala proporzionata)
-svg_map = f"""
-<div style="display: flex; justify-content: center; margin: 20px 0;">
-<svg width="400" height="500" viewBox="0 0 400 500" style="background-color: transparent;">
-<defs>
-<pattern id="hatch" width="12" height="12" patternTransform="rotate(45)"><rect width="12" height="12" fill="rgba(25, 118, 210, 0.4)" /><line x1="0" y1="0" x2="0" y2="12" stroke="rgba(211, 47, 47, 0.8)" stroke-width="6" /></pattern>
-</defs>
-<g transform="scale(0.95, 1.15) translate(10, -30)">
-    <!-- Base Italia (Penisola) -->
-    <path d="M 60,90 Q 80,60 110,60 Q 150,50 180,50 Q 220,55 240,60 Q 270,70 270,80 Q 260,90 250,100 Q 260,110 260,120 Q 270,140 280,160 Q 290,180 300,200 Q 320,210 340,220 Q 350,225 330,235 Q 350,250 360,270 Q 370,290 380,310 Q 365,315 350,320 Q 340,305 330,290 Q 320,300 310,310 Q 305,335 300,360 Q 290,380 280,400 Q 275,395 270,390 Q 275,375 280,360 Q 275,345 270,330 Q 260,320 250,310 Q 235,290 220,270 Q 210,250 200,230 Q 190,215 180,200 Q 165,190 150,180 Q 125,175 100,170 Q 90,155 80,140 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
-    <!-- Sardegna -->
-    <path d="M 110,230 Q 125,225 140,230 Q 142,250 145,270 Q 140,300 135,330 Q 125,335 115,330 Q 110,300 105,270 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
-    <!-- Sicilia -->
-    <path d="M 270,410 Q 250,405 230,410 Q 210,415 190,420 Q 195,435 200,450 Q 225,460 250,470 Q 260,455 270,440 Z" fill="#E5E5E5" stroke="#B0B0B0" stroke-width="2"/>
+# Coordinate stilizzate per i pascoli (Dorsale Appenninica centro-meridionale)
+if show_pascoli:
+    fig_map.add_trace(go.Scattergeo(
+        lon=[10.5, 13.0, 16.0, 16.5, 15.0, 13.5, 11.0, 10.5],
+        lat=[44.0, 42.0, 40.0, 38.5, 39.5, 41.5, 43.5, 44.0],
+        fill="toself",
+        fillcolor="rgba(25, 118, 210, 0.5)",
+        line=dict(color="rgba(25, 118, 210, 0.8)", width=1),
+        name="Pascoli estensivi",
+        hoverinfo="text",
+        text="Aree estensive e transumanza"
+    ))
 
-    <!-- Livello Pascoli Estensivi (Blu) -->
-    <path d="M 65,95 Q 85,75 110,75 Q 150,65 180,65 Q 210,70 230,75 Q 255,85 255,90 Q 240,105 230,100 Q 210,90 180,90 Q 150,90 110,95 Q 85,110 70,115 Z" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;"/>
-    <path d="M 120,165 Q 160,180 190,205 Q 220,235 250,270 Q 275,305 285,340 Q 295,370 280,390 Q 290,360 280,320 Q 270,285 240,245 Q 210,205 170,175 Z" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;"/>
-    <circle cx="190" cy="225" r="10" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;" />
-    <circle cx="335" cy="225" r="10" fill="#1976D2" opacity="{opacity_pascoli}" style="transition: opacity 0.4s ease;" />
+# Coordinate stilizzate per il lupo (Alpi Occidentali + Dorsale Appenninica)
+if show_lupo:
+    fig_map.add_trace(go.Scattergeo(
+        lon=[7.0, 8.5, 10.5, 13.0, 16.0, 16.5, 15.0, 13.5, 11.0, 9.5, 8.0, 7.0],
+        lat=[44.5, 46.0, 44.5, 42.0, 40.0, 38.5, 39.5, 41.5, 43.5, 45.0, 45.5, 44.5],
+        fill="toself",
+        fillcolor="rgba(211, 47, 47, 0.5)",
+        line=dict(color="rgba(211, 47, 47, 0.8)", width=1),
+        name="Distribuzione lupo",
+        hoverinfo="text",
+        text="Aree di presenza stabile del lupo"
+    ))
 
-    <!-- Livello Lupo (Rosso) -->
-    <path d="M 60,90 Q 80,70 105,70 Q 145,60 175,60 Q 205,65 225,70 Q 250,80 250,85 Q 235,100 225,95 Q 205,85 175,85 Q 145,85 105,90 Q 80,105 65,110 Z" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;"/>
-    <path d="M 115,160 Q 155,175 185,200 Q 215,230 245,265 Q 270,300 280,335 Q 290,365 275,385 Q 285,355 275,315 Q 265,280 235,240 Q 205,200 165,170 Z" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;"/>
-    <circle cx="190" cy="225" r="8" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;" />
-    <circle cx="335" cy="225" r="8" fill="#D32F2F" opacity="{opacity_lupo}" style="transition: opacity 0.4s ease;" />
+# Impostazioni visualizzazione mappa centrata sull'Italia
+fig_map.update_geos(
+    lataxis_range=[36, 47], 
+    lonaxis_range=[6, 19],
+    showland=True, 
+    landcolor="#E5E5E5",
+    showcountries=True, 
+    countrycolor="#B0B0B0",
+    resolution=50,
+    showocean=False,
+    bgcolor="rgba(0,0,0,0)"
+)
 
-    <!-- Sovrapposizione (Tratteggio visibile solo se entrambi attivi) -->
-    <path d="M 65,95 Q 85,75 110,75 Q 150,65 180,65 Q 210,70 230,75 Q 255,85 255,90 Q 240,105 230,100 Q 210,90 180,90 Q 150,90 110,95 Q 85,110 70,115 Z" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;"/>
-    <path d="M 120,165 Q 160,180 190,205 Q 220,235 250,270 Q 275,305 285,340 Q 295,370 280,390 Q 290,360 280,320 Q 270,285 240,245 Q 210,205 170,175 Z" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;"/>
-    <circle cx="190" cy="225" r="8" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;" />
-    <circle cx="335" cy="225" r="8" fill="url(#hatch)" opacity="{opacity_overlap}" style="transition: opacity 0.4s ease;" />
-</g>
-</svg>
-</div>
-"""
-st.markdown(svg_map, unsafe_allow_html=True)
+fig_map.update_layout(
+    margin={"r":0,"t":0,"l":0,"b":0},
+    height=450,
+    showlegend=False,
+    dragmode=False,
+    paper_bgcolor="rgba(0,0,0,0)"
+)
+
+st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False})
+
 st.caption(
-    "*Rappresentazione grafica delle zone di concentrazione (sovrapposizione Alpi Occidentali e dorsale Appenninica), basata sulle mappe del report impatto zootecnico ISPRA e sulla distribuzione del lupo.*"
+    "*Rappresentazione grafica semplificata e stilizzata delle zone di concentrazione (sovrapposizione Alpi Occidentali e dorsale Appenninica). Le forme tracciate non seguono confini amministrativi o dati a risoluzione comunale, ma si basano in modo generico sulle mappe del report impatto zootecnico ISPRA.*"
 )
 
 st.markdown("#### 🎯 1 azienda su 4 subisce oltre il 70% dei danni")
 st.write("I dati sugli ovicaprini (pecore e capre) mostrano in modo estremo questa sproporzione: una piccola fetta di aziende fa da parafulmine per l'intero settore.")
 
-# Calcoli eseguiti fuori da qualsiasi stringa o decoratore per massima stabilità
+# Calcoli dimensioni pittogramma
 k_picto = 10.35
 sz_danno_hotspot = int(round(k_picto * math.sqrt(73.3)))
 sz_az_hotspot = int(round(k_picto * math.sqrt(25.9)))
 sz_danno_altre = int(round(k_picto * math.sqrt(26.7)))
 sz_az_altre = int(round(k_picto * math.sqrt(74.1)))
 
-# Costruzione del blocco HTML senza linee vuote e senza spazi estremi per evitare conflitti Markdown
 html_pictogram = f"""
 <div class="pictogram-container">
 <div class="picto-col">
@@ -287,15 +305,15 @@ with col3_left:
     st.markdown("#### ⏳ Tempi di indennizzo estenuanti")
     
     kpi_atto3_sx = """
-    <div class="kpi-card">
-        <p class="kpi-val" style="font-size:3rem;">80,4%</p>
-        <p class="kpi-label" style="font-size:1.1rem;">Degli allevatori colpiti aspetta <b>da 2 a oltre 12 mesi</b> per ricevere l'indennizzo di un capo ucciso.</p>
-    </div>
-    """
+<div class="kpi-card">
+<p class="kpi-val" style="font-size:3rem;">80,4%</p>
+<p class="kpi-label" style="font-size:1.1rem;">Degli allevatori colpiti aspetta <b>da 2 a oltre 12 mesi</b> per ricevere l'indennizzo di un capo ucciso.</p>
+</div>
+"""
     st.markdown(kpi_atto3_sx, unsafe_allow_html=True)
     
     st.write(
-        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito per una piccola azienda che nel frattempo ha perso una fonte di reddito e, ovviamente, continua a sostenere le spese quotidiane."
+        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito per una piccolaazienda che nel frattempo ha perso una fonte di reddito e, ovviamente, continua a sostenere le spese quotidiane."
     )
 
 with col3_right:
@@ -305,23 +323,23 @@ with col3_right:
     )
 
     kpi_atto3_dx = """
-    <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
-        <p class="kpi-val" style="font-size:1.6rem; color:#555555;">8,9%</p>
-        <p class="kpi-label" style="margin-top:2px;">Casi accertati con presenza di <b>cani da guardiania</b>.</p>
-    </div>
-    <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
-        <p class="kpi-val" style="font-size:1.6rem; color:#555555;">11,8%</p>
-        <p class="kpi-label" style="margin-top:2px;">Casi con presenza di <b>recinzioni antipredazione</b>.</p>
-    </div>
-    <div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px; border-left-color:#856404;">
-        <p class="kpi-val" style="font-size:1.6rem; color:#856404;">14,7%</p>
-        <p class="kpi-label" style="margin-top:2px;">Casi accertati con <b>nessuna misura</b> esplicita.</p>
-    </div>
-    <div class="kpi-card kpi-card-neutral" style="padding-top: 8px; padding-bottom: 8px;">
-        <p class="kpi-val kpi-val-neutral" style="font-size:1.6rem;">58,1%</p>
-        <p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno registrato l'informazione.</p>
-    </div>
-    """
+<div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
+<p class="kpi-val" style="font-size:1.6rem; color:#555555;">8,9%</p>
+<p class="kpi-label" style="margin-top:2px;">Casi accertati con presenza di <b>cani da guardiania</b>.</p>
+</div>
+<div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px;">
+<p class="kpi-val" style="font-size:1.6rem; color:#555555;">11,8%</p>
+<p class="kpi-label" style="margin-top:2px;">Casi con presenza di <b>recinzioni antipredazione</b>.</p>
+</div>
+<div class="kpi-card" style="padding-top: 8px; padding-bottom: 8px; border-left-color:#856404;">
+<p class="kpi-val" style="font-size:1.6rem; color:#856404;">14,7%</p>
+<p class="kpi-label" style="margin-top:2px;">Casi accertati con <b>nessuna misura</b> esplicita.</p>
+</div>
+<div class="kpi-card kpi-card-neutral" style="padding-top: 8px; padding-bottom: 8px;">
+<p class="kpi-val kpi-val-neutral" style="font-size:1.6rem;">58,1%</p>
+<p class="kpi-label" style="margin-top:2px;"><b>Dato mancante.</b> In 10.409 eventi di predazione le autorità non hanno registrato l'informazione.</p>
+</div>
+"""
     st.markdown(kpi_atto3_dx, unsafe_allow_html=True)
 
 st.markdown("---")
@@ -334,9 +352,9 @@ st.write(
 
 kpi_atto4 = """
 <div class="kpi-card" style="text-align: center; padding: 30px;">
-    <p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
-    <p class="kpi-label" style="font-size:1.3rem;"><b>Aziende bovine scomparse in soli 5 anni (2015-2019)</b></p>
-    <p class="kpi-label" style="max-width: 700px; margin: 15px auto 0;">Tra il 2015 e il 2019 il numero di stalle in Italia è crollato del 12,7% — ma il numero di animali allevati è rimasto praticamente lo stesso. Cosa significa? Che il settore si sta concentrando sempre di più nelle mani di grandi allevamenti al chiuso, a scapito delle realtà medio-piccole, quelle più esposte sul territorio.</p>
+<p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
+<p class="kpi-label" style="font-size:1.3rem;"><b>Aziende bovine scomparse in soli 5 anni (2015-2019)</b></p>
+<p class="kpi-label" style="max-width: 700px; margin: 15px auto 0;">Tra il 2015 e il 2019 il numero di stalle in Italia è crollato del 12,7% — ma il numero di animali allevati è rimasto praticamente lo stesso. Cosa significa? Che il settore si sta concentrando sempre di più nelle mani di grandi allevamenti al chiuso, a scapito delle realtà medio-piccole, quelle più esposte sul territorio.</p>
 </div>
 """
 st.markdown(kpi_atto4, unsafe_allow_html=True)
@@ -371,9 +389,9 @@ st.write(
 
 kpi_atto5 = """
 <div class="kpi-card" style="margin-top: 15px;">
-    <p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
-    <p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
-    <p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
+<p class="kpi-label" style="margin-top: 0; margin-bottom: 5px;">Fondi prevenzione lupo Emilia-Romagna</p>
+<p class="kpi-val" style="font-size:2.4rem;">Da 87,5 Mila a 2 Milioni €</p>
+<p class="kpi-label">Il salto straordinario di finanziamenti stanziati nel 2026 rispetto alle limitate quote ordinarie passate.</p>
 </div>
 """
 st.markdown(kpi_atto5, unsafe_allow_html=True)
