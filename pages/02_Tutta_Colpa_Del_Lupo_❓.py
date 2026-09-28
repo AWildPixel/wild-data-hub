@@ -136,7 +136,7 @@ with col1_right:
         st.plotly_chart(
             make_donut(
                 impatto_bovini,
-                "1 azienda bovina su 300 colpita ogni anno",
+                "1 azienda bovina su 300 ogni anno",
                 "0,33%",
             ),
             use_container_width=True,
@@ -146,7 +146,7 @@ with col1_right:
         st.plotly_chart(
             make_donut(
                 impatto_ovicaprini,
-                "1 azienda ovicaprina su 140 colpita ogni anno",
+                "1 azienda ovicaprina su 140 ogni anno",
                 "0,70%",
             ),
             use_container_width=True,
