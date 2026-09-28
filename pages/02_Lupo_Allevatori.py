@@ -19,7 +19,7 @@ css_style = """
 .kpi-val { font-size: 2.2rem; font-weight: 700; color: #D32F2F; margin: 0; line-height: 1.1; }
 .kpi-val-neutral { color: #555555; }
 .kpi-label { font-size: 1rem; color: #555555; margin-top: 8px; line-height: 1.4; }
-.pictogram-container { display: flex; justify-content: space-around; align-items: flex-end; background: #f8f9fa; padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+.pictogram-container { display: flex; justify-content: space-around; align-items: flex-end; background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
 .picto-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
 .picto-label { font-size: 1.1rem; font-weight: 600; color: #333; }
 .picto-sub { font-size: 0.9rem; color: #666; }
@@ -181,78 +181,82 @@ st.write(
     "Vi suona familiare? È la stessa identica area in cui si concentra la popolazione di lupo. Non è un caso: dove i due mondi si sovrappongono, nasce il conflitto."
 )
 
-st.markdown("#### 📍 La mappa del conflitto")
+col2_left, col2_right = st.columns([1, 1])
 
-# --- FORME STILIZZATE PRECALCOLATE (macchie ritagliate sulla terraferma) ---
-PASC_LON = [12.63, 12.09, 11.31, 11.21, 11.18, 11.21, 11.30, 11.51, 11.74, 12.49, 13.14, 13.88, 14.40, 14.71, 15.25, 15.87, 16.34, 16.60, 16.61, 16.49, 16.53, 16.76, 16.82, 16.74, 16.54, 16.57, 16.33, 16.17, 16.08, 15.77, 15.66, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.04, 15.73, 14.71, 14.13, 13.81, 13.31, 12.63, None, 6.75, 6.77, 7.13, 7.19, 7.02, 7.00, 6.89, 6.92, 7.03, 7.19, 7.38, 7.58, 7.74, 7.75, 7.49, 7.54, 7.86, 7.95, 7.95, 7.83, 7.65, 7.56, 7.58, 7.71, 7.68, 7.38, 6.97, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
-PASC_LAT = [42.67, 43.03, 43.45, 43.58, 43.74, 43.91, 44.04, 44.16, 44.14, 43.77, 43.35, 42.57, 42.19, 41.79, 41.34, 40.92, 40.45, 40.10, 39.95, 39.76, 39.66, 39.58, 39.15, 38.89, 38.71, 38.42, 38.29, 38.14, 37.94, 37.92, 38.01, 38.21, 38.29, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.34, 39.96, 40.70, 41.18, 41.59, 41.95, 42.67, None, 45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.70, 45.84, 45.89, 45.86, 45.90, 45.97, 45.91, 45.69, 44.96, 44.72, 44.43, 44.26, 44.02, 43.84, 43.78, 43.83, 43.93, 44.06, 44.17, 44.13, 44.30, 44.53, 44.69, 44.69, 44.82, 44.88, 45.01]
-LUPO_LON = [6.75, 6.77, 7.13, 7.19, 7.01, 7.00, 6.84, 6.84, 7.03, 7.19, 7.65, 7.82, 7.85, 7.57, 7.62, 7.91, 8.00, 8.14, 8.35, 9.41, 10.91, 12.52, 13.17, 13.94, 14.46, 14.77, 15.30, 15.95, 16.36, 16.62, 16.61, 16.49, 16.53, 16.78, 16.84, 16.90, 16.83, 16.62, 16.54, 16.57, 16.32, 16.17, 16.07, 15.78, 15.68, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.00, 15.81, 15.78, 15.63, 15.43, 15.00, 14.81, 14.62, 14.08, 13.75, 13.25, 12.57, 12.04, 11.39, 10.31, 10.21, 10.07, 9.85, 9.75, 9.23, 8.74, 8.50, 8.39, 8.21, 8.06, 7.94, 7.60, 7.56, 7.71, 7.68, 7.39, 7.01, 6.93, 6.95, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
-LUPO_LAT = [45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.71, 45.81, 45.88, 45.86, 45.97, 45.90, 45.76, 44.94, 44.76, 44.50, 44.51, 44.75, 44.88, 44.99, 44.61, 43.85, 43.42, 42.63, 42.24, 41.84, 41.40, 40.96, 40.55, 40.20, 39.96, 39.76, 39.66, 39.61, 39.55, 39.18, 38.93, 38.82, 38.72, 38.42, 38.29, 38.14, 37.93, 37.92, 37.96, 38.20, 38.30, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.44, 39.70, 39.89, 40.07, 40.07, 40.40, 40.65, 40.66, 41.11, 41.53, 41.89, 42.62, 42.97, 43.30, 43.74, 43.91, 44.03, 44.11, 44.10, 44.35, 44.43, 44.32, 44.19, 44.07, 44.06, 43.85, 43.79, 43.88, 44.06, 44.17, 44.13, 44.26, 44.35, 44.43, 44.52, 44.69, 44.69, 44.82, 44.88, 45.01]
+with col2_left:
+    st.markdown("#### 📍 La mappa del conflitto")
 
-# Selettore a 3 opzioni al posto delle due checkbox (non si può arrivare a "nessuna mappa")
-scelta_mappa = st.radio(
-    "Cosa vuoi vedere sulla mappa?",
-    ["🟦 Pascoli estensivi", "🟥 Lupo", "🟪 Entrambi"],
-    horizontal=True,
-    label_visibility="collapsed",
-)
-show_pascoli = scelta_mappa in ("🟦 Pascoli estensivi", "🟪 Entrambi")
-show_lupo = scelta_mappa in ("🟥 Lupo", "🟪 Entrambi")
+    # --- FORME STILIZZATE PRECALCOLATE (macchie ritagliate sulla terraferma) ---
+    PASC_LON = [12.63, 12.09, 11.31, 11.21, 11.18, 11.21, 11.30, 11.51, 11.74, 12.49, 13.14, 13.88, 14.40, 14.71, 15.25, 15.87, 16.34, 16.60, 16.61, 16.49, 16.53, 16.76, 16.82, 16.74, 16.54, 16.57, 16.33, 16.17, 16.08, 15.77, 15.66, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.04, 15.73, 14.71, 14.13, 13.81, 13.31, 12.63, None, 6.75, 6.77, 7.13, 7.19, 7.02, 7.00, 6.89, 6.92, 7.03, 7.19, 7.38, 7.58, 7.74, 7.75, 7.49, 7.54, 7.86, 7.95, 7.95, 7.83, 7.65, 7.56, 7.58, 7.71, 7.68, 7.38, 6.97, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
+    PASC_LAT = [42.67, 43.03, 43.45, 43.58, 43.74, 43.91, 44.04, 44.16, 44.14, 43.77, 43.35, 42.57, 42.19, 41.79, 41.34, 40.92, 40.45, 40.10, 39.95, 39.76, 39.66, 39.58, 39.15, 38.89, 38.71, 38.42, 38.29, 38.14, 37.94, 37.92, 38.01, 38.21, 38.29, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.34, 39.96, 40.70, 41.18, 41.59, 41.95, 42.67, None, 45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.70, 45.84, 45.89, 45.86, 45.90, 45.97, 45.91, 45.69, 44.96, 44.72, 44.43, 44.26, 44.02, 43.84, 43.78, 43.83, 43.93, 44.06, 44.17, 44.13, 44.30, 44.53, 44.69, 44.69, 44.82, 44.88, 45.01]
+    LUPO_LON = [6.75, 6.77, 7.13, 7.19, 7.01, 7.00, 6.84, 6.84, 7.03, 7.19, 7.65, 7.82, 7.85, 7.57, 7.62, 7.91, 8.00, 8.14, 8.35, 9.41, 10.91, 12.52, 13.17, 13.94, 14.46, 14.77, 15.30, 15.95, 16.36, 16.62, 16.61, 16.49, 16.53, 16.78, 16.84, 16.90, 16.83, 16.62, 16.54, 16.57, 16.32, 16.17, 16.07, 15.78, 15.68, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.00, 15.81, 15.78, 15.63, 15.43, 15.00, 14.81, 14.62, 14.08, 13.75, 13.25, 12.57, 12.04, 11.39, 10.31, 10.21, 10.07, 9.85, 9.75, 9.23, 8.74, 8.50, 8.39, 8.21, 8.06, 7.94, 7.60, 7.56, 7.71, 7.68, 7.39, 7.01, 6.93, 6.95, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
+    LUPO_LAT = [45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.71, 45.81, 45.88, 45.86, 45.97, 45.90, 45.76, 44.94, 44.76, 44.50, 44.51, 44.75, 44.88, 44.99, 44.61, 43.85, 43.42, 42.63, 42.24, 41.84, 41.40, 40.96, 40.55, 40.20, 39.96, 39.76, 39.66, 39.61, 39.55, 39.18, 38.93, 38.82, 38.72, 38.42, 38.29, 38.14, 37.93, 37.92, 37.96, 38.20, 38.30, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.44, 39.70, 39.89, 40.07, 40.07, 40.40, 40.65, 40.66, 41.11, 41.53, 41.89, 42.62, 42.97, 43.30, 43.74, 43.91, 44.03, 44.11, 44.10, 44.35, 44.43, 44.32, 44.19, 44.07, 44.06, 43.85, 43.79, 43.88, 44.06, 44.17, 44.13, 44.26, 44.35, 44.43, 44.52, 44.69, 44.69, 44.82, 44.88, 45.01]
 
-fig_map = go.Figure()
-# Traccia invisibile: garantisce che la sagoma dell'Italia sia sempre presente
-fig_map.add_trace(go.Scattergeo(
-    lon=[12.5], lat=[42.0], mode="markers",
-    marker=dict(size=0.1, opacity=0), hoverinfo="skip",
-))
-if show_pascoli:
+    # Selettore a 3 opzioni al posto delle due checkbox (non si può arrivare a "nessuna mappa")
+    scelta_mappa = st.radio(
+        "Cosa vuoi vedere sulla mappa?",
+        ["🟦 Pascoli estensivi", "🟥 Lupo", "🟪 Entrambi"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+    show_pascoli = scelta_mappa in ("🟦 Pascoli estensivi", "🟪 Entrambi")
+    show_lupo = scelta_mappa in ("🟥 Lupo", "🟪 Entrambi")
+
+    fig_map = go.Figure()
+    # Traccia invisibile: garantisce che la sagoma dell'Italia sia sempre presente
     fig_map.add_trace(go.Scattergeo(
-        lon=PASC_LON, lat=PASC_LAT, mode="lines", fill="toself",
-        fillcolor="rgba(25, 118, 210, 0.45)",
-        line=dict(color="rgba(25, 118, 210, 0.9)", width=1),
-        hoverinfo="skip",
+        lon=[12.5], lat=[42.0], mode="markers",
+        marker=dict(size=0.1, opacity=0), hoverinfo="skip",
     ))
-if show_lupo:
-    fig_map.add_trace(go.Scattergeo(
-        lon=LUPO_LON, lat=LUPO_LAT, mode="lines", fill="toself",
-        fillcolor="rgba(211, 47, 47, 0.45)",
-        line=dict(color="rgba(211, 47, 47, 0.9)", width=1),
-        hoverinfo="skip",
-    ))
+    if show_pascoli:
+        fig_map.add_trace(go.Scattergeo(
+            lon=PASC_LON, lat=PASC_LAT, mode="lines", fill="toself",
+            fillcolor="rgba(25, 118, 210, 0.45)",
+            line=dict(color="rgba(25, 118, 210, 0.9)", width=1),
+            hoverinfo="skip",
+        ))
+    if show_lupo:
+        fig_map.add_trace(go.Scattergeo(
+            lon=LUPO_LON, lat=LUPO_LAT, mode="lines", fill="toself",
+            fillcolor="rgba(211, 47, 47, 0.45)",
+            line=dict(color="rgba(211, 47, 47, 0.9)", width=1),
+            hoverinfo="skip",
+        ))
 
-fig_map.update_geos(
-    projection_type="mercator",
-    lataxis_range=[36, 47.5], lonaxis_range=[6, 19],
-    showland=True, landcolor="#E5E5E5",
-    showcountries=True, countrycolor="#B0B0B0",
-    resolution=50, showocean=False, bgcolor="rgba(0,0,0,0)",
-)
+    fig_map.update_geos(
+        projection_type="mercator",
+        lataxis_range=[36, 47.5], lonaxis_range=[6, 19],
+        showland=True, landcolor="#E5E5E5",
+        showcountries=True, countrycolor="#B0B0B0",
+        resolution=50, showocean=False, bgcolor="rgba(0,0,0,0)",
+    )
 
-fig_map.update_layout(
-    margin={"r":0,"t":0,"l":0,"b":0},
-    height=450,
-    showlegend=False,
-    dragmode=False,
-    paper_bgcolor="rgba(0,0,0,0)"
-)
+    fig_map.update_layout(
+        margin={"r":0,"t":0,"l":0,"b":0},
+        height=450,
+        showlegend=False,
+        dragmode=False,
+        paper_bgcolor="rgba(0,0,0,0)"
+    )
 
-st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False})
+    st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False})
 
-st.caption(
-    "*Rappresentazione grafica semplificata e stilizzata delle zone di concentrazione (sovrapposizione Alpi Occidentali e dorsale Appenninica). Le forme tracciate non seguono confini amministrativi o dati a risoluzione comunale, ma si basano in modo generico sulle mappe del report impatto zootecnico ISPRA.*"
-)
+    st.caption(
+        "*Rappresentazione grafica semplificata e stilizzata delle zone di concentrazione (sovrapposizione Alpi Occidentali e dorsale Appenninica). Le forme tracciate non seguono confini amministrativi o dati a risoluzione comunale, ma si basano in modo generico sulle mappe del report impatto zootecnico ISPRA.*"
+    )
 
-st.markdown("#### 🎯 1 azienda su 4 subisce oltre il 70% dei danni")
-st.write("I dati sugli ovicaprini (pecore e capre) mostrano in modo estremo questa sproporzione: una piccola fetta di aziende fa da parafulmine per l'intero settore.")
+with col2_right:
+    st.markdown("#### 🎯 1 azienda su 4 subisce oltre il 70% dei danni")
+    st.write("I dati sugli ovicaprini (pecore e capre) mostrano in modo estremo questa sproporzione: una piccola fetta di aziende fa da parafulmine per l'intero settore.")
 
-# Calcoli dimensioni pittogramma
-k_picto = 10.35
-sz_danno_hotspot = int(round(k_picto * math.sqrt(73.3)))
-sz_az_hotspot = int(round(k_picto * math.sqrt(25.9)))
-sz_danno_altre = int(round(k_picto * math.sqrt(26.7)))
-sz_az_altre = int(round(k_picto * math.sqrt(74.1)))
+    # Calcoli dimensioni pittogramma
+    k_picto = 10.35
+    sz_danno_hotspot = int(round(k_picto * math.sqrt(73.3)))
+    sz_az_hotspot = int(round(k_picto * math.sqrt(25.9)))
+    sz_danno_altre = int(round(k_picto * math.sqrt(26.7)))
+    sz_az_altre = int(round(k_picto * math.sqrt(74.1)))
 
-html_pictogram = f"""
+    html_pictogram = f"""
 <div class="pictogram-container">
 <div class="picto-col">
 <div class="picto-label" style="color: #D32F2F; margin-bottom: 10px;">Gli "Hotspot"</div>
@@ -282,10 +286,10 @@ html_pictogram = f"""
 </div>
 </div>
 """
-st.markdown(html_pictogram, unsafe_allow_html=True)
-st.caption(
-    "*Il settore bovino se la cava meglio — ma anche lì una minoranza di aziende si porta via la parte più consistente dei danni (il 20,5% delle aziende subisce il 62,2% dei danni).*"
-)
+    st.markdown(html_pictogram, unsafe_allow_html=True)
+    st.caption(
+        "*Il settore bovino se la cava meglio — ma anche lì una minoranza di aziende si porta via la parte più consistente dei danni (il 20,5% delle aziende subisce il 62,2% dei danni).*"
+    )
 
 st.markdown("---")
 
@@ -309,7 +313,7 @@ with col3_left:
     st.markdown(kpi_atto3_sx, unsafe_allow_html=True)
     
     st.write(
-        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito per una piccolaazienda che nel frattempo ha perso una fonte di reddito e, ovviamente, continua a sostenere le spese quotidiane."
+        "In media, l'attesa burocratica è di **201 giorni**. Un tempo infinito per una piccola azienda che nel frattempo ha perso una fonte di reddito e, ovviamente, continua a sostenere le spese quotidiane."
     )
 
 with col3_right:
@@ -404,7 +408,7 @@ with st.expander("📝 Nota sui dati, Caveat e Dataset"):
     * Non esiste una ripartizione regionale pulita per la popolazione di lupo in Appennino, poiché il modello scientifico ISPRA stima le densità su 13 macro-aree di campionamento che valicano i confini amministrativi.
 
     **Inquadramento Normativo (2026):**
-    * Il Disegno di Legge Caccia in Italia (introduzione dei 'bioregolatori') è in iter al Senato.
+    * Il Disegno di Legge Caccia (introduzione dei 'bioregolatori'), già approvato dal Senato il 23 giugno 2026, è ora in esame alla Camera: il voto in Aula è calendarizzato per novembre e, se il testo verrà modificato, tornerà al Senato.
     * La revisione delle tutele ESA (Endangered Species Act) negli USA è un provvedimento amministrativo che riapre ciclicamente il dibattito legale sulla conservazione federale del predatore.
     """)
 
