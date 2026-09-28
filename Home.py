@@ -46,3 +46,9 @@ st.page_link(
     label="EPISODIO #01: Il traffico di animali esotici in Italia",
     icon="👉",
 )
+
+st.page_link(
+    "pages/02_Tutta_Colpa_Del_Lupo_❓.py",
+    label="EPISODIO #02: Tutta colpa del lupo (?) - il dramma dei piccoli allevamenti",
+    icon="👉",
+)
