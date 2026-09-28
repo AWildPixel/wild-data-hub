@@ -33,7 +33,7 @@ st.markdown("---")
 # Contenuto di benvenuto
 st.write("Benvenuto nell'archivio interattivo di **A Wild Pixel**.")
 st.write(
-    "Qui trasformiamo i dati scientifici e i database ufficiali in inchieste visive per comprendere meglio i fenomeni che minacciano la biodiversità globale."
+    "Qui trasformo i dati scientifici e i database ufficiali in inchieste visive per comprendere meglio i fenomeni che minacciano la biodiversità globale."
 )
 
 st.markdown("<br>", unsafe_allow_html=True)
