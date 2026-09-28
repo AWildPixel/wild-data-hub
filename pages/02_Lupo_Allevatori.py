@@ -183,53 +183,49 @@ st.write(
 
 st.markdown("#### 📍 La mappa del conflitto")
 
-# Checkbox per la mappa interattiva Plotly
-col_check1, col_check2 = st.columns(2)
-with col_check1:
-    show_pascoli = st.checkbox("🟦 Mostra pascoli estensivi (Alpi e Appennini)", value=True)
-with col_check2:
-    show_lupo = st.checkbox("🟥 Mostra distribuzione del lupo", value=False)
+# --- FORME STILIZZATE PRECALCOLATE (macchie ritagliate sulla terraferma) ---
+PASC_LON = [12.63, 12.09, 11.31, 11.21, 11.18, 11.21, 11.30, 11.51, 11.74, 12.49, 13.14, 13.88, 14.40, 14.71, 15.25, 15.87, 16.34, 16.60, 16.61, 16.49, 16.53, 16.76, 16.82, 16.74, 16.54, 16.57, 16.33, 16.17, 16.08, 15.77, 15.66, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.04, 15.73, 14.71, 14.13, 13.81, 13.31, 12.63, None, 6.75, 6.77, 7.13, 7.19, 7.02, 7.00, 6.89, 6.92, 7.03, 7.19, 7.38, 7.58, 7.74, 7.75, 7.49, 7.54, 7.86, 7.95, 7.95, 7.83, 7.65, 7.56, 7.58, 7.71, 7.68, 7.38, 6.97, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
+PASC_LAT = [42.67, 43.03, 43.45, 43.58, 43.74, 43.91, 44.04, 44.16, 44.14, 43.77, 43.35, 42.57, 42.19, 41.79, 41.34, 40.92, 40.45, 40.10, 39.95, 39.76, 39.66, 39.58, 39.15, 38.89, 38.71, 38.42, 38.29, 38.14, 37.94, 37.92, 38.01, 38.21, 38.29, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.34, 39.96, 40.70, 41.18, 41.59, 41.95, 42.67, None, 45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.70, 45.84, 45.89, 45.86, 45.90, 45.97, 45.91, 45.69, 44.96, 44.72, 44.43, 44.26, 44.02, 43.84, 43.78, 43.83, 43.93, 44.06, 44.17, 44.13, 44.30, 44.53, 44.69, 44.69, 44.82, 44.88, 45.01]
+LUPO_LON = [6.75, 6.77, 7.13, 7.19, 7.01, 7.00, 6.84, 6.84, 7.03, 7.19, 7.65, 7.82, 7.85, 7.57, 7.62, 7.91, 8.00, 8.14, 8.35, 9.41, 10.91, 12.52, 13.17, 13.94, 14.46, 14.77, 15.30, 15.95, 16.36, 16.62, 16.61, 16.49, 16.53, 16.78, 16.84, 16.90, 16.83, 16.62, 16.54, 16.57, 16.32, 16.17, 16.07, 15.78, 15.68, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.00, 15.81, 15.78, 15.63, 15.43, 15.00, 14.81, 14.62, 14.08, 13.75, 13.25, 12.57, 12.04, 11.39, 10.31, 10.21, 10.07, 9.85, 9.75, 9.23, 8.74, 8.50, 8.39, 8.21, 8.06, 7.94, 7.60, 7.56, 7.71, 7.68, 7.39, 7.01, 6.93, 6.95, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
+LUPO_LAT = [45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.71, 45.81, 45.88, 45.86, 45.97, 45.90, 45.76, 44.94, 44.76, 44.50, 44.51, 44.75, 44.88, 44.99, 44.61, 43.85, 43.42, 42.63, 42.24, 41.84, 41.40, 40.96, 40.55, 40.20, 39.96, 39.76, 39.66, 39.61, 39.55, 39.18, 38.93, 38.82, 38.72, 38.42, 38.29, 38.14, 37.93, 37.92, 37.96, 38.20, 38.30, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.44, 39.70, 39.89, 40.07, 40.07, 40.40, 40.65, 40.66, 41.11, 41.53, 41.89, 42.62, 42.97, 43.30, 43.74, 43.91, 44.03, 44.11, 44.10, 44.35, 44.43, 44.32, 44.19, 44.07, 44.06, 43.85, 43.79, 43.88, 44.06, 44.17, 44.13, 44.26, 44.35, 44.43, 44.52, 44.69, 44.69, 44.82, 44.88, 45.01]
 
-# Creazione della mappa Plotly
+# Selettore a 3 opzioni al posto delle due checkbox (non si può arrivare a "nessuna mappa")
+scelta_mappa = st.radio(
+    "Cosa vuoi vedere sulla mappa?",
+    ["🟦 Pascoli estensivi", "🟥 Lupo", "🟪 Entrambi"],
+    horizontal=True,
+    label_visibility="collapsed",
+)
+show_pascoli = scelta_mappa in ("🟦 Pascoli estensivi", "🟪 Entrambi")
+show_lupo = scelta_mappa in ("🟥 Lupo", "🟪 Entrambi")
+
 fig_map = go.Figure()
-
-# Coordinate stilizzate per i pascoli (Dorsale Appenninica centro-meridionale)
+# Traccia invisibile: garantisce che la sagoma dell'Italia sia sempre presente
+fig_map.add_trace(go.Scattergeo(
+    lon=[12.5], lat=[42.0], mode="markers",
+    marker=dict(size=0.1, opacity=0), hoverinfo="skip",
+))
 if show_pascoli:
     fig_map.add_trace(go.Scattergeo(
-        lon=[10.5, 13.0, 16.0, 16.5, 15.0, 13.5, 11.0, 10.5],
-        lat=[44.0, 42.0, 40.0, 38.5, 39.5, 41.5, 43.5, 44.0],
-        fill="toself",
-        fillcolor="rgba(25, 118, 210, 0.5)",
-        line=dict(color="rgba(25, 118, 210, 0.8)", width=1),
-        name="Pascoli estensivi",
-        hoverinfo="text",
-        text="Aree estensive e transumanza"
+        lon=PASC_LON, lat=PASC_LAT, mode="lines", fill="toself",
+        fillcolor="rgba(25, 118, 210, 0.45)",
+        line=dict(color="rgba(25, 118, 210, 0.9)", width=1),
+        hoverinfo="skip",
     ))
-
-# Coordinate stilizzate per il lupo (Alpi Occidentali + Dorsale Appenninica)
 if show_lupo:
     fig_map.add_trace(go.Scattergeo(
-        lon=[7.0, 8.5, 10.5, 13.0, 16.0, 16.5, 15.0, 13.5, 11.0, 9.5, 8.0, 7.0],
-        lat=[44.5, 46.0, 44.5, 42.0, 40.0, 38.5, 39.5, 41.5, 43.5, 45.0, 45.5, 44.5],
-        fill="toself",
-        fillcolor="rgba(211, 47, 47, 0.5)",
-        line=dict(color="rgba(211, 47, 47, 0.8)", width=1),
-        name="Distribuzione lupo",
-        hoverinfo="text",
-        text="Aree di presenza stabile del lupo"
+        lon=LUPO_LON, lat=LUPO_LAT, mode="lines", fill="toself",
+        fillcolor="rgba(211, 47, 47, 0.45)",
+        line=dict(color="rgba(211, 47, 47, 0.9)", width=1),
+        hoverinfo="skip",
     ))
 
-# Impostazioni visualizzazione mappa centrata sull'Italia
 fig_map.update_geos(
-    lataxis_range=[36, 47], 
-    lonaxis_range=[6, 19],
-    showland=True, 
-    landcolor="#E5E5E5",
-    showcountries=True, 
-    countrycolor="#B0B0B0",
-    resolution=50,
-    showocean=False,
-    bgcolor="rgba(0,0,0,0)"
+    projection_type="mercator",
+    lataxis_range=[36, 47.5], lonaxis_range=[6, 19],
+    showland=True, landcolor="#E5E5E5",
+    showcountries=True, countrycolor="#B0B0B0",
+    resolution=50, showocean=False, bgcolor="rgba(0,0,0,0)",
 )
 
 fig_map.update_layout(
