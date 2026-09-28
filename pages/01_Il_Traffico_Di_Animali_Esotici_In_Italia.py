@@ -159,7 +159,7 @@ try:
 
     # ATTO 1
     st.subheader("🔍 Oltre i numeri: l'anomalia degli Stati Uniti")
-    st.write("La nostra indagine mostra che gli USA non sono soltanto il principale esportatore di spedizioni legali in Italia ma anche di quelle illegali, perché? Più che a una rete di contrabbando tradizionale, questo primato viene ricondotto dagli analisti a un mix di dinamiche commerciali, burocrazia e snodi logistici:")
+    st.write("L'indagine mostra che gli USA non sono soltanto il principale esportatore di spedizioni legali in Italia ma anche di quelle illegali, perché? Più che a una rete di contrabbando tradizionale, questo primato viene ricondotto dagli analisti a un mix di dinamiche commerciali, burocrazia e snodi logistici:")
     
     col1_1, col1_2, col1_3 = st.columns(3)
     with col1_1:
@@ -217,7 +217,7 @@ try:
         
         **Perché succede?** Principalmente per tre motivi: transito di prodotti ultra-lavorati (estratti, cosmetici, pillole per la medicina tradizionale in cui è impossibile risalire alla specie senza test del DNA), compilazioni doganali affrettate ("pelle di rettile" invece del taxon esatto), o raggruppamenti generici applicati spesso a coralli e piante.
         
-        Per garantire la totale trasparenza e mostrarvi la reale dimensione del traffico verso l'Italia, **abbiamo scelto di non nascondere questi dati incompleti**. 
+        Per garantire la totale trasparenza e mostrarvi la reale dimensione del traffico verso l'Italia, **ho scelto di non nascondere questi dati incompleti**. 
         
         Ecco perché, passando il cursore sui vari Paesi nella mappa, noterete un doppio conteggio: il volume totale delle spedizioni (che include l'area grigia dei registri incompleti) e il numero esatto delle spedizioni in cui l'animale è stato correttamente identificato. Questa scelta ci permette di mantenere la precisione sulla classe dominante per ogni nazione, senza però sminuire i numeri reali del mercato legale (15.750 registrazioni) e dei sequestri ufficiali (61 casi).
         """)
