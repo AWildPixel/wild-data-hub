@@ -34,7 +34,7 @@ st.markdown("---")
 # TITOLO E INTRODUZIONE NARRATIVA
 st.title("🐺 Tutta colpa del lupo (?) - il dramma dei piccoli allevamenti")
 st.markdown(
-    "*Dagli Stati Uniti all'Europa, si diffonde ancora una volta l'idea che l'unico modo per proteggere gli allevatori sia cacciare il lupo. A parte l'aspetto etico (potete immaginare la mia opinione al riguardo), i dati ci raccontano in realtà una storia più complicata — e la soluzione non è così semplice...*"
+    "*Dagli Stati Uniti all'Europa, si diffonde ancora una volta l'idea che l'unico modo per proteggere gli allevatori sia cacciare il lupo. A parte l'aspetto etico (potete immaginare la mia opinione al riguardo), i dati in realtà ci raccontano una storia più complicata — la cui soluzione non è affatto semplice...*"
 )
 st.markdown("---")
 
@@ -166,13 +166,13 @@ with col1_right:
 st.markdown("---")
 
 # --- ATTO 2 ---
-st.subheader("2. Le vere vittime: i piccoli allevatori")
+st.subheader("2. Il dramma dei piccoli allevamenti")
 st.write(
     "Se l'impatto medio è così basso, da dove nasce l'esasperazione? Dal fatto che il danno **non è distribuito equamente**, ma si accanisce in modo devastante su una strettissima minoranza di realtà produttive."
 )
 
 st.write(
-    "Per capire chi rischia davvero di più, bisogna prima sapere come si alleva in Italia — e in particolare chi lo fa nel modo più esposto. Si tratta del cosiddetto **allevamento estensivo meridionale**: aziende piccole, meno di 100 capi, gestite a pascolo libero e transumanza, spesso l'unica attività economica sostenibile in territori dove altro non cresce. È anche il modello più povero economicamente dei tre esistenti in Italia (dati ISMEA) — e non a caso, quello più difficile da proteggere: capi che si muovono su territori ampi, difficili da recintare, con sorveglianza discontinua e poche risorse per cani da guardiania o recinzioni fisse."
+    "In Italia, infatti, ci sono varie tipologie di allevamenti, e quella più esposta agli attacchi dei lupi è il cosiddetto **allevamento estensivo meridionale**: aziende piccole, meno di 100 capi, gestite a pascolo libero e transumanza, spesso l'unica attività economica sostenibile in territori dove altro non cresce. È anche il modello più povero economicamente dei tre esistenti in Italia (dati ISMEA) — e non a caso, quello più difficile da proteggere: capi che si muovono su territori ampi, difficili da recintare, con sorveglianza discontinua e poche risorse per cani da guardiania o recinzioni fisse."
 )
 st.write(
     "E dove si concentra questo tipo di allevamento in Italia? Escludendo Sicilia e Sardegna (le aree a densità più alta in assoluto, ma fuori dall'areale del lupo), la fascia con più capi ovicaprini sulla terraferma è la **dorsale appenninica centro-meridionale**, insieme al **settore occidentale delle Alpi** — con due sacche isolate a Grosseto e sul Gargano."
@@ -345,7 +345,7 @@ with col3_right:
 st.markdown("---")
 
 # --- ATTO 4 ---
-st.subheader("4. Il vero dramma: una morsa insostenibile sui piccoli")
+st.subheader("4. Una morsa insostenibile per i più piccoli")
 st.write(
     "Chi subisce più danni da lupo deve anche affrontare la concorrenza di aziende sempre più grandi, che spingono i prezzi verso il basso. E le spese per difendersi dal predatore — recinzioni, mantenimento dei cani, manodopera — non sono un costo isolato, ma un peso che si aggiunge a bilanci già messi sotto pressione. È un cerchio che si stringe da più lati sulle stesse realtà."
 )
