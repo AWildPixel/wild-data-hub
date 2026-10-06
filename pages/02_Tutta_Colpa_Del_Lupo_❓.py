@@ -83,18 +83,6 @@ with col1_left:
 """
     st.markdown(kpi_atto1, unsafe_allow_html=True)
 
-    st.markdown("#### 🌪️ Lupo: quanto mi costi?")
-    st.write(
-        "Per dare una proporzione reale all'allarme economico: i danni diretti"
-        " da predazione valgono circa **1,8 milioni di euro all'anno** a livello"
-        " nazionale (report ISPRA). Nello stesso momento (estate 2026),"
-        " Coldiretti ha stimato in **oltre 3 miliardi di euro** i danni subiti da"
-        " agricoltura e zootecnia a causa di siccità e caldo estremo, con crolli"
-        " nella produzione di foraggi e latte. Un conto che sale a 20 miliardi in"
-        " quattro anni. Un rischio strutturale ben diverso."
-    )
-
-with col1_right:
     st.markdown("#### 📊 Le conseguenze per gli allevamenti")
     st.write(
         "È innegabile che i casi di predazione siano aumentati negli ultimi anni, seguendo la naturale espansione della specie. Tuttavia, se guardiamo ai numeri assoluti, la percentuale di aziende che subisce predazioni ogni anno resta marginale rispetto al totale nazionale:"
@@ -153,6 +141,18 @@ with col1_right:
             config={"displayModeBar": False, "scrollZoom": False},
         )
 
+with col1_right:
+    st.markdown("#### 🌪️ Lupo: quanto mi costi?")
+    st.write(
+        "Per dare una proporzione reale all'allarme economico: i danni diretti"
+        " da predazione valgono circa **1,8 milioni di euro all'anno** a livello"
+        " nazionale (report ISPRA). Nello stesso momento (estate 2026),"
+        " Coldiretti ha stimato in **oltre 3 miliardi di euro** i danni subiti da"
+        " agricoltura e zootecnia a causa di siccità e caldo estremo, con crolli"
+        " nella produzione di foraggi e latte. Un conto che sale a 20 miliardi in"
+        " quattro anni. Un rischio strutturale ben diverso."
+    )
+
     st.markdown("#### 🐕 L'ombra dei cani vaganti")
     st.write(
         "C'è un ultimo dettaglio che ridimensiona ulteriormente il quadro. In"
@@ -189,6 +189,10 @@ with col2_left:
     # --- FORME STILIZZATE PRECALCOLATE (macchie ritagliate sulla terraferma) ---
     PASC_LON = [12.63, 12.09, 11.31, 11.21, 11.18, 11.21, 11.30, 11.51, 11.74, 12.49, 13.14, 13.88, 14.40, 14.71, 15.25, 15.87, 16.34, 16.60, 16.61, 16.49, 16.53, 16.76, 16.82, 16.74, 16.54, 16.57, 16.33, 16.17, 16.08, 15.77, 15.66, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.04, 15.73, 14.71, 14.13, 13.81, 13.31, 12.63, None, 6.75, 6.77, 7.13, 7.19, 7.02, 7.00, 6.89, 6.92, 7.03, 7.19, 7.38, 7.58, 7.74, 7.75, 7.49, 7.54, 7.86, 7.95, 7.95, 7.83, 7.65, 7.56, 7.58, 7.71, 7.68, 7.38, 6.97, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
     PASC_LAT = [42.67, 43.03, 43.45, 43.58, 43.74, 43.91, 44.04, 44.16, 44.14, 43.77, 43.35, 42.57, 42.19, 41.79, 41.34, 40.92, 40.45, 40.10, 39.95, 39.76, 39.66, 39.58, 39.15, 38.89, 38.71, 38.42, 38.29, 38.14, 37.94, 37.92, 38.01, 38.21, 38.29, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.34, 39.96, 40.70, 41.18, 41.59, 41.95, 42.67, None, 45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.70, 45.84, 45.89, 45.86, 45.90, 45.97, 45.91, 45.69, 44.96, 44.72, 44.43, 44.26, 44.02, 43.84, 43.78, 43.83, 43.93, 44.06, 44.17, 44.13, 44.30, 44.53, 44.69, 44.69, 44.82, 44.88, 45.01]
+
+    PASC_LON += [None, 12.45, 12.53, 12.75, 12.91, 13.08, 13.1, 13.19, 13.31, 13.38, 13.52, 13.57, 13.75, 14.02, 14.29, 14.52, 14.64, 14.74, 14.92, 15.09, 15.23, 15.38, 15.52, 15.59, 15.49, 15.21, 15.17, 15.09, 15.1, 15.19, 15.18, 15.28, 15.26, 15.11, 15.12, 15.09, 15.02, 14.7, 14.49, 14.38, 14.26, 14.08, 13.89, 13.75, 13.56, 13.32, 13.17, 13.03, 12.92, 12.67, 12.6, 12.5, 12.45, None, 8.17, 8.24, 8.48, 8.79, 9.01, 9.16, 9.21, 9.26, 9.27, 9.39, 9.44, 9.53, 9.51, 9.58, 9.5, 9.68, 9.75, 9.82, 9.76, 9.62, 9.63, 9.73, 9.69, 9.64, 9.56, 9.44, 9.23, 9.09, 9.01, 9.02, 8.85, 8.72, 8.64, 8.57, 8.45, 8.38, 8.44, 8.39, 8.4, 8.47, 8.45, 8.5, 8.57, 8.51, 8.4, 8.42, 8.49, 8.46, 8.48, 8.39, 8.4, 8.31, 8.19, 8.17]
+    PASC_LAT += [None, 37.78, 38.03, 38.15, 38.03, 38.09, 38.19, 38.17, 38.21, 38.11, 38.11, 38.04, 37.97, 38.04, 38.01, 38.04, 38.07, 38.16, 38.19, 38.12, 38.21, 38.23, 38.3, 38.26, 38.07, 37.75, 37.58, 37.48, 37.32, 37.28, 37.2, 37.08, 36.98, 36.85, 36.69, 36.66, 36.7, 36.72, 36.79, 36.97, 37.06, 37.11, 37.1, 37.15, 37.29, 37.36, 37.49, 37.5, 37.58, 37.56, 37.64, 37.68, 37.78, None, 40.77, 40.88, 40.82, 40.92, 41.12, 41.16, 41.25, 41.24, 41.19, 41.18, 41.1, 41.13, 41.01, 40.97, 40.91, 40.84, 40.6, 40.51, 40.39, 40.25, 40.18, 40.07, 39.98, 39.46, 39.14, 39.13, 39.23, 39.21, 39.12, 39.0, 38.88, 38.94, 38.91, 39.04, 39.13, 39.22, 39.29, 39.37, 39.47, 39.6, 39.7, 39.71, 39.86, 39.91, 39.91, 40.03, 40.09, 40.16, 40.28, 40.35, 40.43, 40.59, 40.63, 40.77]
+
     LUPO_LON = [6.75, 6.77, 7.13, 7.19, 7.01, 7.00, 6.84, 6.84, 7.03, 7.19, 7.65, 7.82, 7.85, 7.57, 7.62, 7.91, 8.00, 8.14, 8.35, 9.41, 10.91, 12.52, 13.17, 13.94, 14.46, 14.77, 15.30, 15.95, 16.36, 16.62, 16.61, 16.49, 16.53, 16.78, 16.84, 16.90, 16.83, 16.62, 16.54, 16.57, 16.32, 16.17, 16.07, 15.78, 15.68, 15.66, 15.81, 15.91, 15.91, 16.00, 16.15, 16.22, 16.22, 16.10, 16.00, 15.81, 15.78, 15.63, 15.43, 15.00, 14.81, 14.62, 14.08, 13.75, 13.25, 12.57, 12.04, 11.39, 10.31, 10.21, 10.07, 9.85, 9.75, 9.23, 8.74, 8.50, 8.39, 8.21, 8.06, 7.94, 7.60, 7.56, 7.71, 7.68, 7.39, 7.01, 6.93, 6.95, 6.90, 7.02, 7.08, 7.02, 6.81, 6.75]
     LUPO_LAT = [45.01, 45.12, 45.25, 45.40, 45.52, 45.64, 45.71, 45.81, 45.88, 45.86, 45.97, 45.90, 45.76, 44.94, 44.76, 44.50, 44.51, 44.75, 44.88, 44.99, 44.61, 43.85, 43.42, 42.63, 42.24, 41.84, 41.40, 40.96, 40.55, 40.20, 39.96, 39.76, 39.66, 39.61, 39.55, 39.18, 38.93, 38.82, 38.72, 38.42, 38.29, 38.14, 37.93, 37.92, 37.96, 38.20, 38.30, 38.45, 38.66, 38.72, 38.72, 38.86, 38.92, 39.04, 39.44, 39.70, 39.89, 40.07, 40.07, 40.40, 40.65, 40.66, 41.11, 41.53, 41.89, 42.62, 42.97, 43.30, 43.74, 43.91, 44.03, 44.11, 44.10, 44.35, 44.43, 44.32, 44.19, 44.07, 44.06, 43.85, 43.79, 43.88, 44.06, 44.17, 44.13, 44.26, 44.35, 44.43, 44.52, 44.69, 44.69, 44.82, 44.88, 45.01]
 
@@ -294,9 +298,9 @@ with col2_right:
 st.markdown("---")
 
 # --- ATTO 3 ---
-st.subheader("3. La vera minaccia… la burocrazia")
+st.subheader("3. Le vere minacce: burocrazia e concorrenza")
 st.write(
-    "Mentre si propongono 'soluzioni' come ridurre le tutele per il lupo o addirittura cacciarlo, i dati mettono a nudo il vero problema odierno: un sistema di supporto pubblico lento, farraginoso e spesso inaccessibile, sia per i rimborsi che per l'acquisto di difese."
+    "Mentre si propongono 'soluzioni' come ridurre le tutele per il lupo o addirittura cacciarlo, i dati mettono a nudo i veri problemi che soffocano i piccoli allevatori: da un lato un sistema di supporto pubblico lento, farraginoso e spesso inaccessibile (sia per i rimborsi che per l'acquisto di difese), dall'altro una concorrenza di mercato che favorisce i grandi impianti e schiaccia le realtà medio-piccole, rendendo le spese di prevenzione un peso insostenibile per bilanci già messi a dura prova."
 )
 
 col3_left, col3_right = st.columns([1, 1])
@@ -342,14 +346,6 @@ with col3_right:
 """
     st.markdown(kpi_atto3_dx, unsafe_allow_html=True)
 
-st.markdown("---")
-
-# --- ATTO 4 ---
-st.subheader("4. Una morsa insostenibile per i più piccoli")
-st.write(
-    "Chi subisce più danni da lupo deve anche affrontare la concorrenza di aziende sempre più grandi, che spingono i prezzi verso il basso. E le spese per difendersi dal predatore — recinzioni, mantenimento dei cani, manodopera — non sono un costo isolato, ma un peso che si aggiunge a bilanci già messi sotto pressione. È un cerchio che si stringe da più lati sulle stesse realtà."
-)
-
 kpi_atto4 = """
 <div class="kpi-card" style="text-align: center; padding: 30px;">
 <p class="kpi-val" style="font-size:3.5rem;">-21.527</p>
@@ -361,8 +357,8 @@ st.markdown(kpi_atto4, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- ATTO 5 ---
-st.subheader("5. La soluzione")
+# --- ATTO 4 ---
+st.subheader("4. La soluzione")
 
 st.write(
     "Molti considerano la caccia al lupo l'unica, vera soluzione al problema. Ma non è così."
