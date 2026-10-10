@@ -1,29 +1,35 @@
-name: Keep Streamlit App Awake
+import re
+import sys
+from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
-on:
-  schedule:
-    # Esegue automaticamente lo script ogni 6 ore
-    - cron: '0 */6 * * *'
-  workflow_dispatch:
-    # Ti permette di testarlo a mano quando vuoi dalla tab "Actions" di GitHub
+URL = "https://wild-data.streamlit.app"
 
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout del repository
-        uses: actions/checkout@v4
+def run():
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        try:
+            # domcontentloaded invece di networkidle: Streamlit non diventa mai davvero "idle"
+            page.goto(URL, wait_until="domcontentloaded", timeout=60000)
 
-      - name: Configurazione Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+            # Se l'app dormiva, clicca il bottone di risveglio
+            wake = page.get_by_role("button", name=re.compile("get this app back up", re.I))
+            try:
+                wake.wait_for(timeout=8000)
+                wake.click()
+                print("App addormentata: risveglio richiesto.")
+            except PWTimeout:
+                pass  # nessun bottone: l'app era già sveglia
 
-      - name: Installazione Playwright
-        run: |
-          python -m pip install --upgrade pip
-          pip install playwright
-          playwright install chromium
+            # Aspetta che l'app Streamlit sia davvero caricata (WebSocket attivo)
+            page.wait_for_selector('[data-testid="stApp"]', timeout=90000)
+            page.wait_for_timeout(10000)
+            print(f"Ping eseguito con successo su: {URL}")
+        except Exception as e:
+            print(f"Errore durante il ping: {e}")
+            sys.exit(1)
+        finally:
+            browser.close()
 
-      - name: Esecuzione script
-        run: python keep_alive.py
+if __name__ == "__main__":
+    run()
