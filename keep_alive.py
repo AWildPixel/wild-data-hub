@@ -5,6 +5,8 @@ from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
 URL = "https://wild-data.streamlit.app"
 TENTATIVI = 2
+IFRAME = 'iframe[title="streamlitApp"]'
+APP = '[data-testid="stApp"]'
 
 
 def stato(page, etichetta, n):
@@ -14,10 +16,30 @@ def stato(page, etichetta, n):
     except Exception as e:
         print(f"  (screenshot fallito: {e})", flush=True)
     try:
-        testo = page.inner_text("body", timeout=5000)[:400].replace("\n", " | ")
+        testo = page.inner_text("body", timeout=5000)[:300].replace("\n", " | ")
     except Exception:
         testo = "(testo non leggibile)"
-    print(f"[{etichetta}] url={page.url}\n  testo: {testo}", flush=True)
+    n_iframe = page.locator("iframe").count()
+    print(
+        f"[{etichetta}] url={page.url} iframe_trovati={n_iframe}\n  testo: {testo}",
+        flush=True,
+    )
+
+
+def app_caricata(page):
+    """True se l'app Streamlit è presente nella pagina o dentro l'iframe."""
+    if page.locator(APP).count() > 0:
+        return True
+    return page.frame_locator(IFRAME).locator(APP).count() > 0
+
+
+def aspetta_app(page, secondi=150):
+    fine = time.time() + secondi
+    while time.time() < fine:
+        if app_caricata(page):
+            return True
+        page.wait_for_timeout(3000)
+    return False
 
 
 def ping(p, n):
@@ -26,13 +48,14 @@ def ping(p, n):
         page = browser.new_page()
         try:
             page.goto(URL, wait_until="domcontentloaded", timeout=60000)
+            page.wait_for_timeout(5000)
             stato(page, "dopo_goto", n)
 
             wake = page.get_by_role(
                 "button", name=re.compile("get this app back up", re.I)
             )
             try:
-                wake.wait_for(state="visible", timeout=15000)
+                wake.wait_for(state="visible", timeout=20000)
                 trovato = True
             except PWTimeout:
                 trovato = False
@@ -46,10 +69,8 @@ def ping(p, n):
             else:
                 print("Nessun bottone di risveglio.", flush=True)
 
-            page.wait_for_selector('[data-testid="stApp"]', timeout=120000)
-
-            if page.get_by_text("gone to sleep", exact=False).count() > 0:
-                raise RuntimeError("Schermata di sospensione ancora visibile.")
+            if not aspetta_app(page):
+                raise RuntimeError("L'app non risulta caricata (né in pagina né in iframe).")
 
             page.wait_for_timeout(15000)
             stato(page, "finale", n)
