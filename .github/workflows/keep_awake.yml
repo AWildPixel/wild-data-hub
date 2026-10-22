@@ -2,14 +2,13 @@ name: Keep Streamlit App Awake
 
 on:
   schedule:
-    # Ogni 3 ore: GitHub ritarda spesso i cron e la soglia di Streamlit è 12 ore
     - cron: '0 */3 * * *'
   workflow_dispatch:
 
 jobs:
   ping:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - name: Checkout del repository
         uses: actions/checkout@v4
@@ -26,4 +25,12 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Esecuzione script
-        run: python keep_alive.py
+        run: python -u keep_alive.py
+
+      - name: Salva screenshot di debug
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: debug_*.png
+          if-no-files-found: ignore
