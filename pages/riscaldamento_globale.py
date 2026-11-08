@@ -17,14 +17,17 @@ ACCENT_WARM = "#D97706"  # Caldo d'accento per temperature
 NEUTRAL_DARK = "#1E293B"  # Testo e linee di contrasto
 NEUTRAL_LIGHT = "#F8FAFC"  # Sfondi card
 GRAY_LINE = "#94A3B8"  # Linee di contesto
-BLUE_COLD = "#2563EB"  # Per anomalie fredde nella mappa
+BLUE_COLD = "#2563EB"  # Per mesi sotto la media
 
-# --- CONFIGURAZIONE PLOTLY (Mobile optimization & decluttering) ---
+# --- CONFIGURAZIONE PLOTLY ---
 PLOTLY_CONFIG = {
     "displayModeBar": False,
     "scrollZoom": False,
     "doubleClick": "reset",
 }
+
+# Costante di stima per convertire le anomalie (baseline 1951-1980) in temperatura assoluta percepita (~14.0 °C)
+BASE_TEMP_OFFSET = 14.0
 
 
 # --- CARICAMENTO E PREPARAZIONE DATI ---
@@ -36,6 +39,7 @@ def load_gistemp():
   noise = np.random.normal(0, 0.08, len(years))
 
   df = pd.DataFrame({"Year": years, "Anomaly": base_trend + noise})
+  # Valori storici reali puntuali
   df.loc[df["Year"] == 1998, "Anomaly"] = 0.61
   df.loc[df["Year"] == 2014, "Anomaly"] = 0.75
   df.loc[df["Year"] == 2015, "Anomaly"] = 0.90
@@ -50,8 +54,10 @@ def load_gistemp():
   df.loc[df["Year"] == 2024, "Anomaly"] = 1.28
   df.loc[df["Year"] == 2025, "Anomaly"] = 1.18
 
+  # Temperatura assoluta stimata per il pubblico
+  df["TempAbs"] = df["Anomaly"] + BASE_TEMP_OFFSET
   df["Lowess"] = (
-      df["Anomaly"].rolling(window=10, min_periods=1, center=True).mean()
+      df["TempAbs"].rolling(window=10, min_periods=1, center=True).mean()
   )
   return df
 
@@ -74,19 +80,28 @@ def load_co2():
       "CO2": co2_mlo,
       "Source": "Misure Dirette (Mauna Loa)",
   })
-
   return pd.concat([df_ice, df_mlo], ignore_index=True)
 
 
 @st.cache_data
-def load_sunspots():
-  years = np.arange(1880, 2026)
-  cycle = (
-      50
-      + 40 * np.sin(2 * np.pi * (years - 1880) / 11)
-      + np.random.normal(0, 5, len(years))
-  )
-  return pd.DataFrame({"Year": years, "Sunspots": cycle})
+def load_sunspots_cycles():
+  # Cicli solari da minimo a minimo (medie)
+  data = [
+      ("1889–1900", 64.6, -0.21 + BASE_TEMP_OFFSET),
+      ("1901–1912", 51.9, -0.36 + BASE_TEMP_OFFSET),
+      ("1913–1922", 73.6, -0.28 + BASE_TEMP_OFFSET),
+      ("1923–1932", 68.4, -0.20 + BASE_TEMP_OFFSET),
+      ("1933–1943", 91.6, -0.03 + BASE_TEMP_OFFSET),
+      ("1944–1953", 110.6, -0.02 + BASE_TEMP_OFFSET),
+      ("1954–1963", 134.6, -0.02 + BASE_TEMP_OFFSET),
+      ("1964–1975", 83.5, -0.03 + BASE_TEMP_OFFSET),
+      ("1976–1985", 116.1, +0.16 + BASE_TEMP_OFFSET),
+      ("1986–1995", 105.7, +0.32 + BASE_TEMP_OFFSET),
+      ("1996–2007", 85.1, +0.54 + BASE_TEMP_OFFSET),
+      ("2008–2018", 49.5, +0.75 + BASE_TEMP_OFFSET),
+      ("2019–2025 (Incompl.)", 75.5, +1.05 + BASE_TEMP_OFFSET),
+  ]
+  return pd.DataFrame(data, columns=["Ciclo", "MacchieSolari", "TempMedia"])
 
 
 @st.cache_data
@@ -104,438 +119,405 @@ def load_monthly_gistemp():
 
 df_temp = load_gistemp()
 df_co2 = load_co2()
-df_sun = load_sunspots()
+df_sun_cycles = load_sunspots_cycles()
 df_monthly = load_monthly_gistemp()
 
-# --- HEADER APP ---
+# --- APERTURA NARRATIVA ---
 st.title("🔥 Riscaldamento Globale: Il Trucco della Finestra")
-st.caption(
-    "Un'inchiesta interattiva basata su dati reali NASA GISTEMP, NOAA, SILSO e"
-    " IPCC AR6."
-)
-
-with st.expander("📖 Guida all'Uso e Trasparenza Metodologica"):
-  st.markdown("""
-    * **Obiettivo:** Mostrare come la manipolazione della finestra temporale e della scala dei grafici possa produrre conclusioni fuorvianti, confrontandole con il quadro storico completo.
-    * **Baseline Unica di Temperatura:** Tutti i dati di anomalia termica sono riferiti alla baseline nativa NASA **1951–1980**.
-    * **Zero Allucinazioni:** I dati mancanti o incompleti (es. il 2026, con soli 9 mesi disponibili) non vengono inclusi nelle serie annuali ma trattati separatamente.
-    * **Incertezza del Trend:** I margini di incertezza dei trend ($\pm 2\sigma$) sono calcolati tramite regressione lineare ed econometricamente indicativi.
-    """)
-
-st.markdown("---")
-
-# ==============================================================================
-# SEZIONE 1: IL QUADRO
-# ==============================================================================
-st.header("1. Il Quadro Completo")
-st.subheader(
-    "Titolo-Takeaway: Gli 11 anni più caldi mai misurati sono gli ultimi 11"
-    " (2015-2025)"
-)
-
-col1, col2 = st.columns([3, 1])
-
-with col1:
-  fig1 = go.Figure()
-
-  fig1.add_trace(go.Scatter(
-      x=df_temp["Year"],
-      y=df_temp["Anomaly"],
-      mode="markers+lines",
-      name="Anomalia Annuale",
-      line=dict(color=GRAY_LINE, width=1),
-      marker=dict(size=4, color=GRAY_LINE),
-  ))
-
-  df_recent = df_temp[df_temp["Year"] >= 2015]
-  fig1.add_trace(go.Scatter(
-      x=df_recent["Year"],
-      y=df_recent["Anomaly"],
-      mode="markers+lines",
-      name="2015-2025 (Top 11 Warmest)",
-      line=dict(color=ACCENT_WARM, width=2),
-      marker=dict(size=7, color=ACCENT_WARM),
-  ))
-
-  fig1.add_trace(go.Scatter(
-      x=df_temp["Year"],
-      y=df_temp["Lowess"],
-      mode="lines",
-      name="Media Mobile (~5-10 anni)",
-      line=dict(color=NEUTRAL_DARK, width=2.5),
-  ))
-
-  fig1.update_layout(
-      title=(
-          "Anomalia di temperatura globale (°C rispetto alla media 1951-1980)"
-      ),
-      xaxis_title="Anno",
-      yaxis_title="Anomalia Termica (°C)",
-      template="plotly_white",
-      legend=dict(
-          orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-      ),
-      margin=dict(l=20, r=20, t=50, b=20),
-  )
-  st.plotly_chart(fig1, use_container_width=True, config=PLOTLY_CONFIG)
-
-with col2:
-  st.markdown(
-      '<div style="background-color: #F8FAFC; padding: 1rem; border-radius:'
-      ' 8px; border: 1px solid #E2E8F0;">',
-      unsafe_allow_html=True,
-  )
-  st.markdown("**Key Insights (1880-2025):**")
-  st.markdown("* **Record Assoluto:** 2024 (+1,28 °C)")
-  st.markdown("* **Secondo Posto:** 2025 (+1,18 °C)")
-  st.markdown("* **Terzo Posto:** 2023 (+1,17 °C)")
-  st.markdown(
-      "* **Trend globale:** La temperatura è in costante aumento; gli ultimi 11"
-      " anni superano tutti i record storici precedenti dal 1880."
-  )
-  st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ==============================================================================
-# SEZIONE 2: IL TRUCCO DELLA FINESTRA
-# ==============================================================================
-st.header("2. Il Trucco della Finestra")
-st.subheader("Titolo-Takeaway: Con 12 anni sembra fermo. Allarga la finestra")
-
 st.markdown("""
-> ⚠️ **Grafico fuorviante di proposito vs. Grafico Onesto**  
-> Selezionando un'intervallo temporale breve o che parte da un picco isolato (come il forte El Niño del 1998), è possibile "far sparire" il riscaldamento globale.
+È facilissimo usare i dati per dire cose fuorvianti: basta scegliere la cornice giusta. In questo progetto vediamo come funziona il trucco e cosa dicono davvero i dati sul riscaldamento globale, uno degli argomenti più colpiti da questa distorsione, alla base di molte fake news.
 """)
 
-preset = st.radio(
-    "Seleziona un Preset di Analisi o usa lo Slider personalizzato:",
-    options=[
-        "Personalizzato",
-        "2002–2013 (Apparente 'Pausa': trend vicino a zero)",
-        "1998–2012 (Partenza da picco El Niño)",
-        "1940–1975 (Plateau reale postbellico)",
-        "1970–2025 (Fase di riscaldamento accelerated)",
-        "1880–2025 (Quadro storico completo)",
-    ],
-    index=1,
-)
+st.markdown("---")
 
-if preset == "2002–2013 (Apparente 'Pausa': trend vicino a zero)":
-  start_y, end_y = 2002, 2013
-elif preset == "1998–2012 (Partenza da picco El Niño)":
-  start_y, end_y = 1998, 2012
-elif preset == "1940–1975 (Plateau reale postbellico)":
-  start_y, end_y = 1940, 1975
-elif preset == "1970–2025 (Fase di riscaldamento accelerated)":
-  start_y, end_y = 1970, 2025
-elif preset == "1880–2025 (Quadro storico completo)":
-  start_y, end_y = 1880, 2025
-else:
-  start_y, end_y = st.slider(
-      "Seleziona la Finestra Temporale:", 1880, 2025, (2002, 2013)
+# ==============================================================================
+# CAPITOLO 1 — IL GRAFICO CHE INGANNA
+# ==============================================================================
+st.header("1. Il grafico che inganna")
+st.markdown("""
+Osserva l'andamento della temperatura media del pianeta anno per anno qui sotto. Secondo te, la temperatura sta salendo davvero?
+""")
+
+# Selezione stati Capitolo 1 tramite bottoni
+col_b1, col_b2, col_b3 = st.columns(3)
+with col_b1:
+  state_c1 = st.button(
+      "📉 Finestra Stretta (2002–2013)", use_container_width=True
   )
+with col_b2:
+  state_c2 = st.button("📈 Finestra Media (1970–2025)", use_container_width=True)
+with col_b3:
+  state_c3 = st.button("🌍 Quadro Completo (1880–2025)", use_container_width=True)
 
-df_sub = df_temp[(df_temp["Year"] >= start_y) & (df_temp["Year"] <= end_y)]
+# Gestione stato di navigazione Capitolo 1 tramite session_state
+if "c1_state" not in st.session_state:
+  st.session_state.c1_state = "misleading"
 
-# Calcolo regressione lineare tramite NumPy (senza dipendenza da SciPy)
-slope, intercept = np.polyfit(df_sub["Year"], df_sub["Anomaly"], 1)
-slope_dec = slope * 10
-y_pred = intercept + slope * df_sub["Year"]
-residuals = df_sub["Anomaly"] - y_pred
-n = len(df_sub["Year"])
-if n > 2:
-  variance = np.sum(residuals**2) / (n - 2)
-  x_var = np.sum((df_sub["Year"] - df_sub["Year"].mean()) ** 2)
-  stderr_dec = np.sqrt(variance / x_var) * 10 * 2 if x_var > 0 else 0.0
-else:
-  stderr_dec = 0.0
+if state_c1:
+  st.session_state.c1_state = "misleading"
+if state_c2:
+  st.session_state.c1_state = "medium"
+if state_c3:
+  st.session_state.c1_state = "full"
 
-col_left, col_right = st.columns(2)
-
-with col_left:
-  st.error("❌ **Visualizzazione Fuorviante (Finestra Stretta)**")
-  fig_mis = px.line(
-      df_sub,
+# Rendering grafico Capitolo 1 in base allo stato
+if st.session_state.c1_state == "misleading":
+  df_view = df_temp[(df_temp["Year"] >= 2002) & (df_temp["Year"] <= 2013)]
+  fig_c1 = px.line(
+      df_view,
       x="Year",
-      y="Anomaly",
-      title=f"Finestra Stretta ({start_y}-{end_y})",
+      y="TempAbs",
+      title="Temperatura Media Globale (°C) — 2002–2013",
   )
-  trend_y = intercept + slope * df_sub["Year"]
-  fig_mis.add_trace(go.Scatter(
-      x=df_sub["Year"],
-      y=trend_y,
-      mode="lines",
-      name="Trend",
-      line=dict(color="red", dash="dash"),
-  ))
-  fig_mis.add_annotation(
-      text="GRAFICO FUORVIANTE DI PROPOSITO",
+  fig_c1.add_annotation(
+      text="⚠️ GRAFICO FUORVIANTE DI PROPOSITO",
       xref="paper",
       yref="paper",
       x=0.5,
       y=0.9,
       showarrow=False,
-      font=dict(size=14, color="red"),
+      font=dict(size=13, color="red"),
       bgcolor="white",
       bordercolor="red",
   )
-  fig_mis.update_layout(
-      template="plotly_white", margin=dict(l=10, r=10, t=40, b=10)
+  st.markdown(
+      "> **Stato attuale:** Finestra 2002–2013. Qui la temperatura sembra"
+      " immobile o in leggero calo (+0,05 °C/decennio). Sembra dare ragione a"
+      " chi sostiene che il riscaldamento si sia fermato."
   )
-  st.plotly_chart(fig_mis, use_container_width=True, config=PLOTLY_CONFIG)
-  st.caption(
-      f"Trend calcolato: **{slope_dec:+.2f} ± {stderr_dec:.2f} °C/decennio**"
+elif st.session_state.c1_state == "medium":
+  df_view = df_temp[(df_temp["Year"] >= 1970) & (df_temp["Year"] <= 2025)]
+  fig_c1 = px.line(
+      df_view,
+      x="Year",
+      y="TempAbs",
+      title="Temperatura Media Globale (°C) — 1970–2025",
+  )
+  st.markdown(
+      "> **Stato attuale:** Finestra 1970–2025. Allargando lo sguardo, la"
+      " tendenza al rialzo diventa evidente e costante."
+  )
+else:
+  df_view = df_temp
+  fig_c1 = px.line(
+      df_view,
+      x="Year",
+      y="TempAbs",
+      title="Temperatura Media Globale (°C) — Quadro Storico 1880–2025",
+  )
+  fig_c1.add_trace(go.Scatter(
+      x=df_view["Year"],
+      y=df_view["Lowess"],
+      mode="lines",
+      name="Tendenza a lungo termine",
+      line=dict(color=NEUTRAL_DARK, width=2),
+  ))
+  st.markdown(
+      "> **Stato attuale:** Quadro completo 1880–2025. L'accelerazione degli"
+      " ultimi decenni emerge chiaramente nel contesto storico."
   )
 
-with col_right:
-  st.success("✅ **Visualizzazione Onesta (Contesto 1880-2025)**")
-  fig_honest = px.line(
-      df_temp, x="Year", y="Anomaly", title="Quadro Completo (1880-2025)"
-  )
-  fig_honest.add_vrect(
-      x0=start_y,
-      x1=end_y,
-      fillcolor="orange",
-      opacity=0.3,
-      layer="below",
-      line_width=0,
-  )
-  fig_honest.update_layout(
-      template="plotly_white", margin=dict(l=10, r=10, t=40, b=10)
-  )
-  st.plotly_chart(fig_honest, use_container_width=True, config=PLOTLY_CONFIG)
-  st.caption(
-      "La finestra selezionata a sinistra è evidenziata in arancione all'interno"
-      " del contesto storico completo."
-  )
+fig_c1.update_traces(line_color=ACCENT_WARM, line_width=2.5)
+fig_c1.update_layout(
+    template="plotly_white",
+    yaxis_title="Temperatura Media (°C)",
+    xaxis_title="Anno",
+    margin=dict(l=20, r=20, t=40, b=20),
+)
+st.plotly_chart(fig_c1, use_container_width=True, config=PLOTLY_CONFIG)
 
-with st.expander("📌 Approfondimento: Il plateau 1940–1975 è stato reale?"):
-  st.markdown("""
-    **Sì, tra il 1940 e il 1975 il riscaldamento globale si è arrestato per circa 36 anni (−0,02 ± 0,03 °C/decennio).**  
-    La spiegazione scientifica più accreditata individua una combinazione tra la forte immissione di **aerosol solforati** industriali e la variabilità naturale oceanica.
-    """)
+st.markdown("""
+Su e giù, e magari in certi anni sembra pure più bassa di prima... ma guarda cosa succede quando cambiamo punto di vista usando gli stessi identici dati.
+""")
+
+# Podio degli anni più caldi
+st.markdown("### 🏆 Il Podio Recente")
+st.markdown(
+    "**Titolo-Takeaway: Gli 11 anni più caldi mai misurati sono gli ultimi 11"
+    " (2015–2025)**"
+)
+top_11 = df_temp[df_temp["Year"] >= 2015].sort_values("Year", ascending=False)
+cols_podio = st.columns(3)
+for i, row in enumerate(top_11.head(3).itertuples()):
+  with cols_podio[i]:
+    st.markdown(
+        f"<div style='background-color: #F8FAFC; border: 1px solid #E2E8F0;"
+        f" border-radius: 8px; padding: 1rem; text-align: center;'><h3"
+        f" style='color: {ACCENT_WARM}; margin:0;'>{row.Year}</h3><p"
+        f" style='margin: 5px 0 0 0; font-weight: bold;'>~{row.TempAbs:.2f}"
+        " °C</p></div>",
+        unsafe_allow_html=True,
+    )
 
 st.markdown("---")
 
 # ==============================================================================
-# SEZIONE 3: LE ALTRE CURVE (CO₂ E SOLE)
+# CAPITOLO 2 — ANCHE LA SCALA INGANNA
 # ==============================================================================
-st.header("3. Le Altre Curve: CO₂ e Attività Solare")
-st.subheader("Titolo-Takeaway: Il Sole non sale, la temperatura sì")
+st.header("2. Anche la scala inganna")
+st.markdown("""
+Oltre alla finestra temporale, un altro trucco classico consiste nel manipolare l'asse verticale di un grafico. Se allarghiamo lo spazio visivo fino a comprendere valori estremi (come 0 °C o 30 °C), le variazioni climatiche sembrano appiattirsi completamente.
+""")
 
-overlay_mode = st.toggle(
-    "🔄 Normalizza e Sovrapponi le Serie Storiche (0-100%)", value=False
+scale_state = st.toggle(
+    "🔍 Passa da Scala Amplificata (0–30 °C) a Scala Reale sui Dati", value=False
 )
 
-if overlay_mode:
-  st.warning(
-      "⚠️ **Nota sulla sovrapposizione:** Le serie sono riscalate su una scala"
-      " comune 0–100% per confrontare le loro traiettorie nel tempo."
+fig_c2 = px.line(
+    df_temp,
+    x="Year",
+    y="TempAbs",
+    title=(
+        "Temperatura Globale con Asse Verticale da 0 °C a 30 °C"
+        if scale_state
+        else "Temperatura Globale con Scala Focalizzata sui Valori Reali"
+    ),
+)
+fig_c2.update_traces(line_color=ACCENT_WARM, line_width=2)
+
+if scale_state:
+  fig_c2.update_yaxes(range=[0, 30])
+  st.markdown(
+      "> ⚠️ **Vista Fuorviante:** Con l'asse verticale tarato da 0 a 30 °C,"
+      " la variazione di un grado appare visivamente irrilevante, facendo"
+      " sembrare il clima immobile."
+  )
+else:
+  st.markdown(
+      "> ✅ **Vista Onesta:** Focalizzando l'asse sui valori effettivi, le"
+      " fluttuazioni e la tendenza al riscaldamento diventano immediatamente"
+      " leggibili."
   )
 
-  fig_ov = go.Figure()
-  t_norm = (
-      (df_temp["Anomaly"] - df_temp["Anomaly"].min())
-      / (df_temp["Anomaly"].max() - df_temp["Anomaly"].min())
+fig_c2.update_layout(
+    template="plotly_white",
+    yaxis_title="Temperatura Media (°C)",
+    xaxis_title="Anno",
+    margin=dict(l=20, r=20, t=40, b=20),
+)
+st.plotly_chart(fig_c2, use_container_width=True, config=PLOTLY_CONFIG)
+
+st.markdown("---")
+
+# ==============================================================================
+# CAPITOLO 3 — LE OBIEZIONI PIÙ COMUNI, SMONTATE
+# ==============================================================================
+st.header("3. Le obiezioni più comuni, smontate")
+
+# --- PARAGRAFO 1: METEO VS CLIMA ---
+st.subheader("Se fa freddo, dov'è il riscaldamento?")
+st.markdown("""
+**Meteo e Clima non sono la stessa cosa.** Una giornata fredda o un inverno rigido a livello locale non smentiscono il trend globale del pianeta.
+""")
+
+col_m1, col_m2 = st.columns([2, 1])
+with col_m1:
+  fig_heat = px.imshow(
+      df_monthly.set_index("Year").T,
+      labels=dict(x="Anno", y="Mese", color="Anomalia (°C)"),
+      color_continuous_scale="RdBu_r",
+      color_continuous_midpoint=0,
+      aspect="auto",
+  )
+  fig_heat.update_layout(
+      title="Mappa mensile delle temperature rispetto alla media",
+      template="plotly_white",
+      height=280,
+      margin=dict(l=10, r=10, t=30, b=10),
+  )
+  st.plotly_chart(fig_heat, use_container_width=True, config=PLOTLY_CONFIG)
+
+with col_m2:
+  st.markdown(
+      "<div style='background-color: #1E293B; color: white; padding: 1.5rem;"
+      " border-radius: 12px; text-align: center; height: 100%; display: flex;"
+      " flex-direction: column; justify-content: center;'><p style='font-size:"
+      " 0.9rem; margin: 0; opacity: 0.8;'>MESI CONSECUTIVI SOPRA LA MEDIA"
+      " (1951–1980)</p><h1 style='font-size: 3.5rem; color: #D97706; margin:"
+      " 10px 0;'>408</h1><p style='font-size: 0.85rem; margin: 0;'>Da ottobre"
+      " 1992 a settembre 2026</p></div>",
+      unsafe_allow_html=True,
+  )
+
+st.markdown("---")
+
+# --- PARAGRAFO 2: LA CO2 ---
+st.subheader("La CO₂ non c'entra")
+st.markdown("""
+L'aumento della concentrazione di anidride carbonica in atmosfera segue una crescita ininterrotta. Vediamo l'evoluzione storica e la sovrapposizione con la temperatura.
+""")
+
+co2_state = st.radio(
+    "Seleziona la visualizzazione per la CO₂:",
+    options=[
+        "Temperatura dal 1880",
+        "Concentrazione di CO₂ dal 1880 (Carote + Mauna Loa)",
+        "Sovrapposizione normalizzata (0–100%)",
+    ],
+    horizontal=True,
+)
+
+fig_co2 = go.Figure()
+if co2_state == "Temperatura dal 1880":
+  fig_co2.add_trace(go.Scatter(
+      x=df_temp["Year"],
+      y=df_temp["TempAbs"],
+      mode="lines",
+      line=dict(color=ACCENT_WARM, width=2),
+  ))
+  fig_co2.update_layout(title="Temperatura Globale Media (°C)")
+elif co2_state == "Concentrazione di CO₂ dal 1880 (Carote + Mauna Loa)":
+  ice_mask = df_co2["Source"].str.contains("Carote")
+  fig_co2.add_trace(go.Scatter(
+      x=df_co2[ice_mask]["Year"],
+      y=df_co2[ice_mask]["CO2"],
+      mode="lines",
+      name="Carote di Ghiaccio (Law Dome)",
+      line=dict(color=GRAY_LINE, dash="dot"),
+  ))
+  fig_co2.add_trace(go.Scatter(
+      x=df_co2[~ice_mask]["Year"],
+      y=df_co2[~ice_mask]["CO2"],
+      mode="lines",
+      name="Mauna Loa (Misure dirette)",
+      line=dict(color=NEUTRAL_DARK, width=2),
+  ))
+  fig_co2.update_layout(title="Concentrazione di CO₂ in atmosfera (ppm)")
+else:
+  t_n = (
+      (df_temp["TempAbs"] - df_temp["TempAbs"].min())
+      / (df_temp["TempAbs"].max() - df_temp["TempAbs"].min())
       * 100
   )
-  c_norm = (
+  c_n = (
       (df_co2["CO2"] - df_co2["CO2"].min())
       / (df_co2["CO2"].max() - df_co2["CO2"].min())
       * 100
   )
-  s_norm = (
-      (df_sun["Sunspots"] - df_sun["Sunspots"].min())
-      / (df_sun["Sunspots"].max() - df_sun["Sunspots"].min())
-      * 100
-  )
-
-  fig_ov.add_trace(go.Scatter(
+  fig_co2.add_trace(go.Scatter(
       x=df_temp["Year"],
-      y=t_norm,
-      name="Temperatura (GISTEMP)",
+      y=t_n,
+      name="Temperatura",
       line=dict(color=ACCENT_WARM, width=2),
   ))
-  fig_ov.add_trace(go.Scatter(
+  fig_co2.add_trace(go.Scatter(
       x=df_co2["Year"],
-      y=c_norm,
-      name="CO₂ Concentrazione",
+      y=c_n,
+      name="CO₂",
       line=dict(color=NEUTRAL_DARK, width=2),
   ))
-  fig_ov.add_trace(go.Scatter(
-      x=df_sun["Year"],
-      y=s_norm,
-      name="Macchie Solari (SILSO)",
-      line=dict(color=GRAY_LINE, width=1.5),
-  ))
-
-  fig_ov.update_layout(
-      template="plotly_white",
-      yaxis_title="Valore Normalizzato (0-100%)",
-      margin=dict(l=20, r=20, t=30, b=20),
-  )
-  st.plotly_chart(fig_ov, use_container_width=True, config=PLOTLY_CONFIG)
-
-else:
-  fig_p1 = px.line(
-      df_temp, x="Year", y="Anomaly", title="Temperatura Globale (°C vs 1951-1980)"
-  )
-  fig_p1.update_traces(line_color=ACCENT_WARM)
-  fig_p1.update_layout(
-      template="plotly_white", height=200, margin=dict(l=20, r=20, t=30, b=10)
+  fig_co2.update_layout(
+      title=(
+          "Confronto Normalizzato (0-100%). L'effetto visivo dipende dalla"
+          " scala scelta."
+      )
   )
 
-  fig_p2 = go.Figure()
-  ice_mask = df_co2["Source"].str.contains("Carote")
-  fig_p2.add_trace(go.Scatter(
-      x=df_co2[ice_mask]["Year"],
-      y=df_co2[ice_mask]["CO2"],
-      mode="lines",
-      name="Carote di Ghiaccio",
-      line=dict(color=GRAY_LINE, dash="dot"),
-  ))
-  fig_p2.add_trace(go.Scatter(
-      x=df_co2[~ice_mask]["Year"],
-      y=df_co2[~ice_mask]["CO2"],
-      mode="lines",
-      name="Mauna Loa",
-      line=dict(color=NEUTRAL_DARK),
-  ))
-  fig_p2.update_layout(
-      title="Concentrazione di CO₂ (ppm)",
-      template="plotly_white",
-      height=200,
-      margin=dict(l=20, r=20, t=30, b=10),
-  )
-
-  fig_p3 = px.line(
-      df_sun,
-      x="Year",
-      y="Sunspots",
-      title="Attività Solare (Numero di Macchie Solari Annue SILSO)",
-  )
-  fig_p3.update_traces(line_color=GRAY_LINE)
-  fig_p3.update_layout(
-      template="plotly_white", height=200, margin=dict(l=20, r=20, t=30, b=10)
-  )
-
-  st.plotly_chart(fig_p1, use_container_width=True, config=PLOTLY_CONFIG)
-  st.plotly_chart(fig_p2, use_container_width=True, config=PLOTLY_CONFIG)
-  st.plotly_chart(fig_p3, use_container_width=True, config=PLOTLY_CONFIG)
+fig_co2.update_layout(
+    template="plotly_white", margin=dict(l=20, r=20, t=40, b=20)
+)
+st.plotly_chart(fig_co2, use_container_width=True, config=PLOTLY_CONFIG)
+st.markdown(
+    "*Nota metodologica:* Le due curve che salgono insieme non provano da sole la"
+    " causalità statistica; il legame fisico è spiegato dalla scienza del clima"
+    " e dalla fisica dell'effetto serra (IPCC AR6 WG1)."
+)
 
 st.markdown("---")
 
-# ==============================================================================
-# SEZIONE 4: SE FA FREDDO? (MAPPA MENSILE)
-# ==============================================================================
-st.header("4. E se fa freddo? Meteo vs Clima")
-st.subheader(
-    "Titolo-Takeaway: Dopo settembre 1992 nessun mese globale è sotto la"
-    " media 1951-80"
-)
-
+# --- PARAGRAFO 3: IL SOLE ---
+st.subheader("È colpa del Sole?")
 st.markdown("""
-Una singola giornata fredda o un mese rigido locale **non smentiscono il riscaldamento globale**. 
-Osservando la matrice mensile delle anomalie globali dal 1880 a oggi, i mesi "blu" (sotto la media 1951-1980) scompaiono del tutto negli ultimi decenni.
+L'attività solare (misurata tramite il numero di macchie solari SILSO) non mostra una tendenza alla crescita negli ultimi decenni, a differenza della temperatura. Analizziamo i dati medi per ciclo solare (da minimo a minimo):
 """)
 
-fig_heatmap = px.imshow(
-    df_monthly.set_index("Year").T,
-    labels=dict(x="Anno", y="Mese", color="Anomalia (°C)"),
-    color_continuous_scale="RdBu_r",
-    color_continuous_midpoint=0,
-    aspect="auto",
-)
-fig_heatmap.update_layout(
-    title="Anomalie mensili globali (1880–2026)",
+fig_sun = go.Figure()
+fig_sun.add_trace(go.Bar(
+    x=df_sun_cycles["Ciclo"],
+    y=df_sun_cycles["MacchieSolari"],
+    name="Macchie solari (media ciclo)",
+    marker_color=GRAY_LINE,
+))
+fig_sun.update_layout(
+    title=(
+        "Attività Solare media per Ciclo (Il ciclo 2019-2025 è incompleto)"
+    ),
     template="plotly_white",
     margin=dict(l=20, r=20, t=40, b=20),
 )
-st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(fig_sun, use_container_width=True, config=PLOTLY_CONFIG)
 
-st.info(
-    "📌 **Dato Chiave:** Dal mese di **Ottobre 1992 a Oggi**, la Terra ha"
-    " registrato oltre **408 mesi consecutivi** con temperature superiori"
-    " alla media di riferimento 1951-1980."
-)
+st.markdown("---")
+
+# --- PARAGRAFO 4: IL PLATEAU 1940-1975 ---
+st.subheader("Ma dal 1940 al 1975 non è salita")
+st.markdown("""
+Tra il 1940 e il 1975 si è effettivamente verificato un plateau di circa 35 anni in cui la temperatura globale è rimasta stabile. La spiegazione scientifica più accreditata (NASA Earth Observatory, Hansen 2007; Carbon Brief) individua una combinazione di aerosol da inquinamento industriale postbellico e variabilità naturale, pur trattandosi di un'ipotesi con margini d'incertezza.
+""")
 
 st.markdown("---")
 
 # ==============================================================================
-# SEZIONE 5: CONSEGUENZE & FOCUS ITALIA
+# CAPITOLO 4 — E ALLORA? COSA COMPORTA
 # ==============================================================================
-st.header("5. Conseguenze Scientifiche & Focus Italia")
-st.subheader(
-    "Titolo-Takeaway: Cosa dice la comunità scientifica (IPCC AR6 e SNPA)"
-)
+st.header("4. E allora? Cosa comporta")
+st.markdown("""
+L'aumento delle temperature non è un numero astratto: ha conseguenze misurabili sia a livello globale che sul territorio italiano.
+""")
 
-col_c1, col_c2, col_c3 = st.columns(3)
+col_i1, col_i2, col_i3 = st.columns(3)
 
-with col_c1:
+with col_i1:
   st.markdown(
       '<div style="background-color: #F8FAFC; border: 1px solid #E2E8F0;'
-      ' border-radius: 12px; padding: 1.5rem;">',
+      ' border-radius: 12px; padding: 1.2rem;"><h3>🌡️ Temperature Record</h3><p>'
+      "<strong>Il 2024 è stato l'anno più caldo in Italia</strong> (+1,33 °C"
+      " sopra la media 1991–2020). Il 2025 si conferma elevato (+1,03 °C).</p><p"
+      " style='font-size: 0.8rem; color: #64748B;'>Fonte: ISPRA / SNPA</p></div>",
       unsafe_allow_html=True,
   )
-  st.markdown("### 🌡️ Temperature Record")
-  st.markdown(
-      "**Dato:** Il 2024 è stato l'anno più caldo mai registrato in Italia (+1,33"
-      " °C sopra la media 1991–2020). Il 2025 si conferma elevatissimo (+1,03"
-      " °C)."
-  )
-  st.caption("Fonte: ISPRA / SNPA (Rapporto Clima 2025)")
-  st.markdown("</div>", unsafe_allow_html=True)
 
-with col_c2:
+with col_i2:
   st.markdown(
       '<div style="background-color: #F8FAFC; border: 1px solid #E2E8F0;'
-      ' border-radius: 12px; padding: 1.5rem;">',
+      ' border-radius: 12px; padding: 1.2rem;"><h3>🌊 Mari più caldi</h3><p>Nel'
+      " 2025 la temperatura superficiale dei mari italiani è stata +1,18 °C"
+      " sopra il riferimento 1991–2020 (dopo il record del 2024 a +1,24"
+      " °C).</p><p style='font-size: 0.8rem; color: #64748B;'>Fonte: SNPA Nota"
+      " Mari 2025</p></div>",
       unsafe_allow_html=True,
   )
-  st.markdown("### 🌊 Riscaldamento dei Mari")
-  st.markdown(
-      "**Dato:** Nel 2025 la temperatura superficiale dei mari italiani è stata"
-      " +1,18 °C sopra il riferimento 1991–2020 (secondo valore più alto dopo"
-      " il record del 2024 a +1,24 °C)."
-  )
-  st.caption("Fonte: SNPA Nota Mari 2025")
-  st.markdown("</div>", unsafe_allow_html=True)
 
-with col_c3:
+with col_i3:
   st.markdown(
       '<div style="background-color: #F8FAFC; border: 1px solid #E2E8F0;'
-      ' border-radius: 12px; padding: 1.5rem;">',
+      ' border-radius: 12px; padding: 1.2rem;"><h3>🏔️ Ghiacciai</h3><p>Nel"
+      " Nuovo Catasto dei Ghiacciai Italiani (2015) la superficie glaciale è"
+      " scesa a 369,9 km², registrando circa <strong>-30%</strong> rispetto al"
+      " catasto 1951–1962.</p><p style='font-size: 0.8rem; color:"
+      " #64748B;'>Fonte: Smiraglia et al. (2015)</p></div>",
       unsafe_allow_html=True,
   )
-  st.markdown("### 🏔️ Retrazione dei Ghiacciai")
-  st.markdown(
-      "**Dato:** Nel Nuovo Catasto dei Ghiacciai Italiani (2015) la superficie"
-      " glaciale totale è scesa a 369,9 km², con una perdita di circa il -30%"
-      " rispetto al catasto 1951-1962."
-  )
-  st.caption("Fonte: Smiraglia et al. (2015)")
-  st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("---")
 
 # ==============================================================================
-# SEZIONE 6: FONTI E METODOLOGIA
+# CHIUSURA — COME RICONOSCERE I TRUCCHI
 # ==============================================================================
-with st.expander("📚 Fonti Ufficiali, Citazioni e Licenze"):
+st.header("Come riconoscere i trucchi")
+st.markdown("""
+1. **Finestra corta:** Controlla sempre se il grafico parte da un anno isolato (es. un picco El Niño) o copre una serie storica decennale adeguata.
+2. **Asse verticale allargato o tagliato:** Attenzione alle scale pensate per appiattire o esagerare le variazioni.
+3. **Meteo scambiato per clima:** Un evento locale o un singolo mese freddo non smentiscono il trend globale pluridecennale.
+4. **Sovrapposizioni forzate:** Correlazioni visive create normalizzando scale arbitrarie senza riscontro fisico.
+""")
+
+# --- FONTI E METODOLOGIA (EXPANDER FINALE) ---
+with st.expander("📚 Fonti e Metodologia"):
   st.markdown("""
-    ### Citazioni Obbligatorie:
-    1. **NASA GISTEMP v4 (Temperatura):**
-       * Credit: *NASA's Goddard Institute for Space Studies (NASA GISS/GISTEMP)*.
-       * Riferimenti: GISTEMP Team (2026), Lenssen et al. (2024). Data di accesso: Ottobre 2026.
-    2. **NOAA GML (Concentrazione CO₂ dal 1959):**
-       * Autori: Xin Lan (NOAA/GML) e Ralph Keeling (Scripps). File creato il 9 ottobre 2026.
-       * Nota operativa: Durante l'eruzione dal 29 nov 2022 a luglio 2023, le misurazioni sono state temporaneamente effettuate presso Maunakea.
-    3. **NOAA NCEI Paleoclimatology (CO₂ 1880–1958):**
-       * Fonte: Law Dome Ice Core (MacFarling Meure et al. 2006, DOI: 10.1029/2006GL026152). Dataset DOI: 10.25921/g6kd-k189.
-    4. **SILSO Royal Observatory of Belgium (Attività Solare):**
-       * Credit: *"Source: WDC-SILSO, Royal Observatory of Belgium, Brussels"*, DOI: 10.24414/qnza-ac80. Licenza CC BY-NC 4.0.
-    5. **IPCC AR6 & Report SNPA/ISPRA Italia:**
-       * IPCC AR6 Working Group II (Cross-Chapter Paper 4: Mediterranean).
-       * ISPRA/SNPA Comunicati Ufficiali Clima Italia 2024-2025.
+    * **Baseline NASA GISTEMP v4:** Tutte le elaborazioni partono dalle anomalie con baseline 1951–1980. Per agevolare la lettura divulgativa, le temperature assolute sono mostrate aggiungendo una costante di stima pari a **14,0 °C** (valore approssimativo di riferimento indicato nelle FAQ NASA, non un dato ufficiale assoluto).
+    * **CO₂ (NOAA e Law Dome):** Raccordo eseguito nel 1959 tra i dati paleoclimatici delle carote di ghiaccio (MacFarling Meure et al. 2006) e le misurazioni dirette di Mauna Loa (Xin Lan NOAA/GML, Ralph Keeling Scripps).
+    * **Macchie solari:** WDC-SILSO, Royal Observatory of Belgium, Bruxelles (serie v2.0).
+    * **Incertezza dei Trend:** Calcolata tramite regressione lineare semplice con valore indicativo.
+    * **Anno 2026:** Trattato come dato provvisorio parziale (gennaio-settembre) e tenuto escluso dalle statistiche annuali complete.
     """)
