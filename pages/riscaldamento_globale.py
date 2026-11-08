@@ -26,7 +26,7 @@ PLOTLY_CONFIG = {
     "doubleClick": "reset",
 }
 
-# Costante di stima per convertire le anomalie (baseline 1951-1980) in temperatura assoluta percepita (~14.0 °C)
+# Costante di stima per convertire le anomalie in temperatura assoluta (~14.0 °C)
 BASE_TEMP_OFFSET = 14.0
 
 
@@ -39,7 +39,6 @@ def load_gistemp():
   noise = np.random.normal(0, 0.08, len(years))
 
   df = pd.DataFrame({"Year": years, "Anomaly": base_trend + noise})
-  # Valori storici reali puntuali
   df.loc[df["Year"] == 1998, "Anomaly"] = 0.61
   df.loc[df["Year"] == 2014, "Anomaly"] = 0.75
   df.loc[df["Year"] == 2015, "Anomaly"] = 0.90
@@ -54,7 +53,6 @@ def load_gistemp():
   df.loc[df["Year"] == 2024, "Anomaly"] = 1.28
   df.loc[df["Year"] == 2025, "Anomaly"] = 1.18
 
-  # Temperatura assoluta stimata per il pubblico
   df["TempAbs"] = df["Anomaly"] + BASE_TEMP_OFFSET
   df["Lowess"] = (
       df["TempAbs"].rolling(window=10, min_periods=1, center=True).mean()
@@ -85,7 +83,6 @@ def load_co2():
 
 @st.cache_data
 def load_sunspots_cycles():
-  # Cicli solari da minimo a minimo (medie)
   data = [
       ("1889–1900", 64.6, -0.21 + BASE_TEMP_OFFSET),
       ("1901–1912", 51.9, -0.36 + BASE_TEMP_OFFSET),
@@ -138,7 +135,6 @@ st.markdown("""
 Osserva l'andamento della temperatura media del pianeta anno per anno qui sotto. Secondo te, la temperatura sta salendo davvero?
 """)
 
-# Selezione stati Capitolo 1 tramite bottoni
 col_b1, col_b2, col_b3 = st.columns(3)
 with col_b1:
   state_c1 = st.button(
@@ -149,7 +145,6 @@ with col_b2:
 with col_b3:
   state_c3 = st.button("🌍 Quadro Completo (1880–2025)", use_container_width=True)
 
-# Gestione stato di navigazione Capitolo 1 tramite session_state
 if "c1_state" not in st.session_state:
   st.session_state.c1_state = "misleading"
 
@@ -160,7 +155,6 @@ if state_c2:
 if state_c3:
   st.session_state.c1_state = "full"
 
-# Rendering grafico Capitolo 1 in base allo stato
 if st.session_state.c1_state == "misleading":
   df_view = df_temp[(df_temp["Year"] >= 2002) & (df_temp["Year"] <= 2013)]
   fig_c1 = px.line(
@@ -230,7 +224,6 @@ st.markdown("""
 Su e giù, e magari in certi anni sembra pure più bassa di prima... ma guarda cosa succede quando cambiamo punto di vista usando gli stessi identici dati.
 """)
 
-# Podio degli anni più caldi
 st.markdown("### 🏆 Il Podio Recente")
 st.markdown(
     "**Titolo-Takeaway: Gli 11 anni più caldi mai misurati sono gli ultimi 11"
@@ -304,7 +297,6 @@ st.markdown("---")
 # ==============================================================================
 st.header("3. Le obiezioni più comuni, smontate")
 
-# --- PARAGRAFO 1: METEO VS CLIMA ---
 st.subheader("Se fa freddo, dov'è il riscaldamento?")
 st.markdown("""
 **Meteo e Clima non sono la stessa cosa.** Una giornata fredda o un inverno rigido a livello locale non smentiscono il trend globale del pianeta.
@@ -341,7 +333,6 @@ with col_m2:
 
 st.markdown("---")
 
-# --- PARAGRAFO 2: LA CO2 ---
 st.subheader("La CO₂ non c'entra")
 st.markdown("""
 L'aumento della concentrazione di anidride carbonica in atmosfera segue una crescita ininterrotta. Vediamo l'evoluzione storica e la sovrapposizione con la temperatura.
@@ -425,7 +416,6 @@ st.markdown(
 
 st.markdown("---")
 
-# --- PARAGRAFO 3: IL SOLE ---
 st.subheader("È colpa del Sole?")
 st.markdown("""
 L'attività solare (misurata tramite il numero di macchie solari SILSO) non mostra una tendenza alla crescita negli ultimi decenni, a differenza della temperatura. Analizziamo i dati medi per ciclo solare (da minimo a minimo):
@@ -449,7 +439,6 @@ st.plotly_chart(fig_sun, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown("---")
 
-# --- PARAGRAFO 4: IL PLATEAU 1940-1975 ---
 st.subheader("Ma dal 1940 al 1975 non è salita")
 st.markdown("""
 Tra il 1940 e il 1975 si è effettivamente verificato un plateau di circa 35 anni in cui la temperatura globale è rimasta stabile. La spiegazione scientifica più accreditata (NASA Earth Observatory, Hansen 2007; Carbon Brief) individua una combinazione di aerosol da inquinamento industriale postbellico e variabilità naturale, pur trattandosi di un'ipotesi con margini d'incertezza.
@@ -480,7 +469,7 @@ with col_i1:
 with col_i2:
   st.markdown(
       '<div style="background-color: #F8FAFC; border: 1px solid #E2E8F0;'
-      ' border-radius: 12px; padding: 1.2rem;"><h3>🌊 Mari più caldi</h3><p>Nel'
+      ' border-radius: 12px; padding: 1.2rem;"><h3>🌊 Mari più caldi</h3><p>Nel"
       " 2025 la temperatura superficiale dei mari italiani è stata +1,18 °C"
       " sopra il riferimento 1991–2020 (dopo il record del 2024 a +1,24"
       " °C).</p><p style='font-size: 0.8rem; color: #64748B;'>Fonte: SNPA Nota"
@@ -501,9 +490,6 @@ with col_i3:
 
 st.markdown("---")
 
-# ==============================================================================
-# CHIUSURA — COME RICONOSCERE I TRUCCHI
-# ==============================================================================
 st.header("Come riconoscere i trucchi")
 st.markdown("""
 1. **Finestra corta:** Controlla sempre se il grafico parte da un anno isolato (es. un picco El Niño) o copre una serie storica decennale adeguata.
@@ -512,7 +498,6 @@ st.markdown("""
 4. **Sovrapposizioni forzate:** Correlazioni visive create normalizzando scale arbitrarie senza riscontro fisico.
 """)
 
-# --- FONTI E METODOLOGIA (EXPANDER FINALE) ---
 with st.expander("📚 Fonti e Metodologia"):
   st.markdown("""
     * **Baseline NASA GISTEMP v4:** Tutte le elaborazioni partono dalle anomalie con baseline 1951–1980. Per agevolare la lettura divulgativa, le temperature assolute sono mostrate aggiungendo una costante di stima pari a **14,0 °C** (valore approssimativo di riferimento indicato nelle FAQ NASA, non un dato ufficiale assoluto).
