@@ -34,7 +34,7 @@ st.markdown("---")
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv('cites.csv', low_memory=False)
+    df = pd.read_csv('data/01_Il_Traffico_Di_Animali_Esotici_In_Italia/cites.csv', low_memory=False)
     # Rimuoviamo solo se manca l'esportatore, ma manteniamo i record senza Classe tassonomica
     df = df.dropna(subset=['Exporter'])
     df['iso3'] = coco.convert(names=df['Exporter'].tolist(), to='ISO3', not_found=None)
